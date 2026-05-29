@@ -79,11 +79,4 @@
 body {
   background-color: var(--color-body-bg);
   font-family: 'Plus Jakarta Sans', sans-serif;
-  min-height: max(884px, 100dvh);
-  transition: background-color 0.3s ease;
-}
-
-.drag-active {
-  border-color: var(--color-drag-border) !important;
-  background-color: var(--color-drag-bg) !important;
 }
