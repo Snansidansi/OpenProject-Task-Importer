@@ -1,7 +1,7 @@
 <script lang="ts">
 </script>
 
-<div class="mt-stack-xl mb-stack-lg flex flex-col items-center gap-2 text-center">
+<div class="mt-stack-sm flex flex-col items-center gap-2 text-center">
   <div class="flex">
     <span class="material-symbols-outlined pr-1 text-[18px]">link</span>
     <a

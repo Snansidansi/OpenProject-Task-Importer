@@ -43,8 +43,7 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-  /* Schau, wie herrlich kurz und lesbar das HTML jetzt bleibt! */
-  class="p-stack-lg hover:border-primary/50 group relative flex min-h-80 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed text-center shadow-[0px_20px_24px_-4px_rgba(0,0,0,0.02)] transition-all duration-300 {dynamicClasses}"
+  class="p-stack-md hover:border-primary/50 group relative flex w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed text-center shadow-[0px_20px_24px_-4px_rgba(0,0,0,0.02)] transition-all duration-300 {dynamicClasses}"
   class:pointer-events-none={isProcessing}
   onclick={() => {
     if (!isProcessing) fileInput.click()
@@ -59,10 +58,6 @@
     onDrop(e)
   }}
 >
-  <div
-    class="bg-primary/0 group-hover:bg-primary/2 pointer-events-none absolute inset-0 transition-colors"
-  ></div>
-
   {#if isProcessing}
     <LoadingState />
   {:else}

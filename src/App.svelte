@@ -7,11 +7,11 @@
   let showImport = true
 </script>
 
-<div class="flex h-screen flex-col overflow-hidden">
+<div class="flex max-h-150 w-full flex-col overflow-hidden">
   <TopBar showImport={showImport} />
 
   <main
-    class="px-margin-mobile py-stack-lg mx-auto flex w-full max-w-2xl grow flex-col items-center overflow-y-auto"
+    class="px-margin-mobile py-stack-md mx-auto flex w-full max-w-2xl grow flex-col items-center overflow-y-auto"
   >
     {#if showImport}
       <TaskImport />

@@ -16,9 +16,9 @@
   }
 </script>
 
-<div class="text-on-surface flex min-h-screen flex-col">
+<div class="text-on-surface flex flex-col">
   <!-- Welcome / Context -->
-  <div class="mb-stack-lg w-full text-center md:text-left">
+  <div class="mb-stack-md w-full text-center">
     <p class="font-body-md text-body-md text-on-surface-variant">
       Wähle ein Projekt aus und lade dein Dokument hoch, um Aufgaben automatisch zu extrahieren.
     </p>

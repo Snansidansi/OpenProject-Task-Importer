@@ -7,7 +7,7 @@
 </script>
 
 <nav
-  class="bg-surface-container-lowest border-outline-variant fixed right-0 bottom-0 left-0 z-50 flex items-center justify-around border-t px-4 py-2"
+  class="bg-surface-container-lowest border-outline-variant flex items-center justify-around border-t px-4 py-2"
 >
   <NavButton
     icon="upload_file"

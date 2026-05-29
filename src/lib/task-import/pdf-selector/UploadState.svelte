@@ -4,9 +4,9 @@
   }>()
 </script>
 
-<div class="mb-6 flex flex-col items-center">
+<div class=" flex flex-col items-center">
   <div
-    class="bg-secondary-container mb-4 flex h-20 w-20 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110"
+    class="bg-secondary-container mb-3 flex h-20 w-20 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110"
   >
     {#if selectedFile}
       <span class="material-symbols-outlined text-primary text-[40px]">check_circle</span>
@@ -15,7 +15,7 @@
     {/if}
   </div>
 
-  <h3 class="font-headline-md text-headline-md text-on-surface mb-2">
+  <h3 class="font-headline-md text-headline-md text-on-surface">
     {selectedFile ? selectedFile.name : "Ziehe deine PDF hierher oder klicke um sie auszuwählen."}
   </h3>
 

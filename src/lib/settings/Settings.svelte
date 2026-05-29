@@ -12,16 +12,15 @@
   let kiPrompt = $state("")
 </script>
 
-<div class="text-on-background flex flex-col items-center">
+<div class="text-on-background flex w-full flex-col items-center">
   <div
-    class="ambient-card flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-[0px_20px_24px_-4px_rgba(0,0,0,0.04)]"
+    class="ambient-card flex w-full flex-col gap-4 rounded-3xl bg-white p-6 shadow-[0px_20px_24px_-4px_rgba(0,0,0,0.04)]"
   >
     <TextInput
       label="OpenProject URL"
       id="op_url"
       placeholder="https://openproject-instanz.com"
       icon="link"
-      helperText="Geben Sie die Basis-URL Ihrer OpenProject-Instanz ein."
       bind:value={opUrl}
     />
 
