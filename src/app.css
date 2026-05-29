@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   --color-surface-container-highest: #e2e2e5;
@@ -70,13 +70,17 @@
 
 .material-symbols-outlined {
   font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 body {
   background-color: var(--color-body-bg);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

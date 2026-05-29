@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NavButton from './NavButton.svelte'
+  import NavButton from "./NavButton.svelte"
 
   let { showImport = $bindable(true) } = $props<{
     showImport?: boolean
