@@ -1,5 +1,7 @@
 <script lang="ts">
-  export let selectedFile: File | null = null
+  let { selectedFile } = $props<{
+    selectedFile: File | null
+  }>()
 </script>
 
 <div class="mb-6 flex flex-col items-center">

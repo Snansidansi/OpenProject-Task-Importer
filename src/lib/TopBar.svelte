@@ -1,5 +1,7 @@
 <script lang="ts">
-  export let showImport: Boolean
+  let { showImport } = $props<{
+    showImport: Boolean
+  }>()
 </script>
 
 <header class="bg-surface sticky top-0 z-50 w-full shadow-[0px_20px_24px_-4px_rgba(0,0,0,0.04)]">

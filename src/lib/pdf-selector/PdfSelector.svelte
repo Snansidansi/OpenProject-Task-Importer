@@ -2,11 +2,19 @@
   import LoadingState from "./LoadingState.svelte"
   import UploadState from "./UploadState.svelte"
 
-  export let isProcessing: boolean = false
-  export let selectedFile: File | null = null
+  let { isProcessing = false, selectedFile = $bindable() } = $props<{
+    isProcessing?: boolean
+    selectedFile: File | null
+  }>()
 
-  let isDragActive: boolean = false
+  let isDragActive = $state(false)
   let fileInput: HTMLInputElement
+
+  let dynamicClasses = $derived(
+    isDragActive || (selectedFile && !isProcessing)
+      ? "border-[#3d6845] bg-[#f1f7f2]"
+      : "border-outline-variant bg-surface-container-lowest",
+  )
 
   function handleFile(file: File) {
     if (file && file.type === "application/pdf") {
@@ -35,18 +43,21 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-  class="bg-surface-container-lowest border-outline-variant p-stack-lg hover:border-primary/50 group relative flex min-h-80 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed text-center shadow-[0px_20px_24px_-4px_rgba(0,0,0,0.02)] transition-all duration-300"
-  class:border-[#3d6845]={isDragActive || (selectedFile && !isProcessing)}
-  class:bg-[#f1f7f2]={isDragActive || (selectedFile && !isProcessing)}
+  /* Schau, wie herrlich kurz und lesbar das HTML jetzt bleibt! */
+  class="p-stack-lg hover:border-primary/50 group relative flex min-h-80 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed text-center shadow-[0px_20px_24px_-4px_rgba(0,0,0,0.02)] transition-all duration-300 {dynamicClasses}"
   class:pointer-events-none={isProcessing}
-  on:click={() => {
+  onclick={() => {
     if (!isProcessing) fileInput.click()
   }}
-  on:dragover|preventDefault={() => {
+  ondragover={(e) => {
+    e.preventDefault()
     if (!isProcessing) isDragActive = true
   }}
-  on:dragleave={() => (isDragActive = false)}
-  on:drop|preventDefault={onDrop}
+  ondragleave={() => (isDragActive = false)}
+  ondrop={(e) => {
+    e.preventDefault()
+    onDrop(e)
+  }}
 >
   <div
     class="bg-primary/0 group-hover:bg-primary/2 pointer-events-none absolute inset-0 transition-colors"
@@ -58,5 +69,5 @@
     <UploadState selectedFile={selectedFile} />
   {/if}
 
-  <input type="file" accept=".pdf" class="hidden" bind:this={fileInput} on:change={onFileChange} />
+  <input type="file" accept=".pdf" class="hidden" bind:this={fileInput} onchange={onFileChange} />
 </div>

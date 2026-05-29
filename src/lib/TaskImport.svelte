@@ -25,7 +25,7 @@
   </div>
 
   <ProjectSelection projects={projects} disabled={isProcessing} selectedProject={selectedProject} />
-  <PdfSelector bind:isProcessing={isProcessing} bind:selectedFile={selectedFile} />
+  <PdfSelector isProcessing={isProcessing} bind:selectedFile={selectedFile} />
   <div class="h-7"></div>
   <ImportButton isProcessing={isProcessing} onclick={handleButtonClick} />
 </div>

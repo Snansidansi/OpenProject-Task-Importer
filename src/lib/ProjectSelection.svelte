@@ -1,7 +1,9 @@
 <script lang="ts">
-  export let projects: Array<String>
-  export let disabled = false
-  export let selectedProject: String
+  let { projects, disabled = false, selectedProject } = $props<{
+    projects: Array<String>
+    disabled?: boolean
+    selectedProject: String
+  }>()
 </script>
 
 <div class="mb-stack-lg group w-full" id="project-container">
