@@ -1,7 +1,7 @@
 <script lang="ts">
   let { isProcessing, onclick } = $props<{
     isProcessing: boolean
-    onclick: () => void
+    onclick: (event: MouseEvent) => void
   }>()
 
   let stateClasses = $derived(

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import type { StartProcessing, StopProcessign as StopProcessing } from "../../background"
+  import { showInfo } from "../../infoStore"
+  import { extractTextFromPdf } from "../../textExtractor"
   import ImportButton from "./ImportButton.svelte"
   import PdfSelector from "./pdf-selector/PdfSelector.svelte"
   import ProjectSelection from "./ProjectSelection.svelte"
@@ -8,11 +11,35 @@
   let selectedProject = projects[0]
   let selectedFile: File | null = null
 
-  function handleButtonClick() {
+  async function handleButtonClick() {
     if (selectedFile == null) {
       return
     }
-    isProcessing = !isProcessing
+
+    if (isProcessing) {
+      isProcessing = false
+      const message: StopProcessing = { type: "StopProcessing" }
+      const info = await chrome.runtime.sendMessage(message)
+      return
+    }
+
+    isProcessing = true
+
+    try {
+      const extractedText = await extractTextFromPdf(selectedFile)
+      showInfo(extractedText)
+    } catch (error) {
+      showInfo((error as Error).message)
+    }
+
+    // const message: StartProcessing = {
+    //   type: "StartProcessing",
+    // }
+    // const info = await chrome.runtime.sendMessage(message)
+    // showInfo(info)
+
+    isProcessing = false
+    selectedFile = null
   }
 </script>
 

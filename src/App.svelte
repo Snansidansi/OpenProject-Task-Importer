@@ -1,5 +1,6 @@
 <script lang="ts">
   import BottomBar from "./lib/bottom-bar/BottomBar.svelte"
+  import InfoPopup from "./lib/infoPopup.svelte"
   import Settings from "./lib/settings/Settings.svelte"
   import TaskImport from "./lib/task-import/TaskImport.svelte"
   import TopBar from "./lib/TopBar.svelte"
@@ -13,6 +14,7 @@
   <main
     class="px-margin-mobile py-stack-md mx-auto flex w-full max-w-2xl grow flex-col items-center overflow-y-auto"
   >
+    <InfoPopup />
     {#if showImport}
       <TaskImport />
     {:else}
