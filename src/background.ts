@@ -1,16 +1,20 @@
-import { extractTextFromPdf } from "./textExtractor"
+export type BackgroundOperationMessage = StartProcessing | StopProcessign
 
-export enum BackgroundActions {
-  StartProcessing,
+export interface StartProcessing {
+  type: "StartProcessing"
 }
 
-interface ProcessingMessage {
-  action: BackgroundActions
-  arrayBuffer: any
+export interface StopProcessign {
+  type: "StopProcessing"
 }
 
-chrome.runtime.onMessage.addListener((message: ProcessingMessage, sender, sendResponse) => {
-  if (message.action === BackgroundActions.StartProcessing) {
-    extractTextFromPdf(message.arrayBuffer)
+chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, sendResponse) => {
+  switch (message.type) {
+    case "StartProcessing":
+      return true
+
+    case "StopProcessing":
+      sendResponse("Stopped")
+      break
   }
 })

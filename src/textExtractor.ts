@@ -1,18 +1,17 @@
-import { PDFParse } from "pdf-parse"
+import { extractText, getDocumentProxy } from "unpdf"
 
 /**
  * @param data file as arraybuffer
- * @throws {Error} if parsing the pdf fails for some reason.
  */
-export async function extractTextFromPdf(data: any): Promise<String> {
+export async function extractTextFromPdf(file: File): Promise<string> {
   try {
-    const parser = new PDFParse({ data: data })
-    const result = await parser.getText()
-    await parser.destroy()
+    const arrayBuffer = await file.arrayBuffer()
+    const pdf = await getDocumentProxy(new Uint8Array(arrayBuffer))
+    const result = await extractText(pdf)
 
-    return result.text
+    return result.text.join(" ")
   } catch (error) {
-    console.log("Error while extracting text form the pdf: ", error)
+    console.error("Error while extracting text from the pdf: ", error)
     throw error
   }
 }
