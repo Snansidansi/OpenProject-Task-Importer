@@ -81,6 +81,7 @@
   })
 
   function addTask(newTask: OpenProjectTask) {
+    if (tasks.find((task) => task.name === newTask.name)) return
     tasks.push(structuredClone($state.snapshot(newTask)))
   }
 
