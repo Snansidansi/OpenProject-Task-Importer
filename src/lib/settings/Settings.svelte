@@ -6,6 +6,8 @@
   import Footer from "./Footer.svelte"
   import { onMount } from "svelte"
   import { getValue, saveValue, StorageKey } from "../../storage"
+  import type { OpenProjectTask } from "../../task"
+  import TaskSettings from "./tasks/TaskSettings.svelte"
 
   let openProjectUrl = $state("")
   let openProjectApiKey = $state("")
@@ -13,6 +15,33 @@
   let aiModel = $state("")
   let aiPrompt = $state("")
   let isLoaded = $state(false)
+  let tasks = $state<OpenProjectTask[]>([])
+  let availableTasks = $state<OpenProjectTask[]>([
+    {
+      name: "Task 1",
+      data: {
+        "Feld 1": false,
+        "Feld 2": false,
+        "Feld 3": false,
+      },
+    },
+    {
+      name: "Task 2",
+      data: {
+        "Feld 1": false,
+        "Feld 2": false,
+        "Feld 3": false,
+      },
+    },
+    {
+      name: "Task 3",
+      data: {
+        "Feld 1": false,
+        "Feld 2": false,
+        "Feld 3": false,
+      },
+    },
+  ])
 
   onMount(async () => {
     openProjectUrl = (await getValue(StorageKey.OpenProjectUrl)) || ""
@@ -20,6 +49,7 @@
     openRouterApiKey = (await getValue(StorageKey.OpenRouterApiKey)) || ""
     aiModel = (await getValue(StorageKey.AiModel)) || ""
     aiPrompt = (await getValue(StorageKey.AiPrompt)) || ""
+    tasks = (await getValue<OpenProjectTask[]>(StorageKey.OpenProjectTasks)) || []
 
     isLoaded = true
   })
@@ -43,6 +73,20 @@
   $effect(() => {
     if (isLoaded) saveValue(StorageKey.AiPrompt, aiPrompt)
   })
+
+  $effect(() => {
+    if (!isLoaded) return
+    const rawData = $state.snapshot(tasks)
+    saveValue(StorageKey.OpenProjectTasks, rawData)
+  })
+
+  function addTask(newTask: OpenProjectTask) {
+    tasks.push(structuredClone($state.snapshot(newTask)))
+  }
+
+  function deleteTask(taskName: String) {
+    tasks = tasks.filter((task) => task.name !== taskName)
+  }
 </script>
 
 <div class="text-on-background flex w-full flex-col items-center">
@@ -74,6 +118,15 @@
     />
 
     <TextInput label="KI Modell" id="ai_model" icon="smart_toy" bind:value={aiModel} />
+
+    <Accordion title="Open Project Tasks" id="tasks">
+      <TaskSettings
+        availableTasks={availableTasks}
+        onSelect={addTask}
+        tasks={tasks}
+        onDelete={deleteTask}
+      />
+    </Accordion>
 
     <Accordion title="Erweiterte Prompt-Einstellungen" id="prompt">
       <TextArea
