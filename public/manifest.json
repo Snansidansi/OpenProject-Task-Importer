@@ -10,5 +10,6 @@
     "service_worker": "src/background.ts",
     "type": "module"
   },
-  "permissions": ["storage"]
+  "permissions": ["storage"],
+  "host_permissions": ["http://*/*", "https://*/*", "http://localhost/*", "http://127.0.0.1/*"]
 }

@@ -1,8 +1,14 @@
 <script lang="ts">
-  let { projects, disabled = false, selectedProject } = $props<{
-    projects: Array<String>
+  import type { Project } from "../../openProject/openProjectTypes"
+
+  let {
+    projects,
+    disabled = false,
+    selectedProject = $bindable(),
+  } = $props<{
+    projects: Project[]
     disabled?: boolean
-    selectedProject: String
+    selectedProject: Project | null
   }>()
 </script>
 
@@ -18,7 +24,7 @@
       disabled={disabled}
     >
       {#each projects as project}
-        <option value={project}>{project}</option>
+        <option value={project}>{project.name}</option>
       {/each}
     </select>
     <div

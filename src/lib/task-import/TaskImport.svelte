@@ -1,15 +1,31 @@
 <script lang="ts">
+  import { onMount } from "svelte"
   import type { StartProcessing, StopProcessign as StopProcessing } from "../../background"
   import { showInfo } from "../../infoStore"
+  import type { Project } from "../../openProject/openProjectTypes"
   import { extractTextFromPdf } from "../../textExtractor"
   import ImportButton from "./ImportButton.svelte"
   import PdfSelector from "./pdf-selector/PdfSelector.svelte"
   import ProjectSelection from "./ProjectSelection.svelte"
+  import { openProjectClient } from "../../openProject/openProjectClient"
 
-  let projects = ["Projekt 1", "Projekt 2"]
-  let isProcessing = false
-  let selectedProject = projects[0]
-  let selectedFile: File | null = null
+  let projects: Project[] = $state([])
+  let isProcessing = $state(false)
+  let selectedProject: Project | null = $state(null)
+  let selectedFile: File | null = $state(null)
+
+  onMount(async () => {
+    try {
+      const unsorted = await openProjectClient.getProjects()
+      projects = unsorted.sort((a, b) => a.name.localeCompare(b.name))
+    } catch (error) {
+      showInfo((error as Error).message)
+    }
+
+    if (projects.length > 0) {
+      selectedProject = projects[0]
+    }
+  })
 
   async function handleButtonClick() {
     if (selectedFile == null) {
