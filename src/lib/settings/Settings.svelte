@@ -7,7 +7,9 @@
   import { onMount } from "svelte"
   import { getValue, saveValue, StorageKey } from "../../storage"
   import TaskSettings from "./tasks/TaskSettings.svelte"
-  import type { Task } from "../../openProject/openProjectTypes"
+  import type { Task, TaskMetadata } from "../../openProject/openProjectTypes"
+  import { showInfo } from "../../infoStore"
+  import { openProjectClient } from "../../openProject/openProjectClient"
 
   let openProjectUrl = $state("")
   let openProjectApiKey = $state("")
@@ -16,32 +18,7 @@
   let aiPrompt = $state("")
   let isLoaded = $state(false)
   let tasks = $state<Task[]>([])
-  let availableTasks = $state<Task[]>([
-    {
-      name: "Task 1",
-      data: {
-        "Feld 1": false,
-        "Feld 2": false,
-        "Feld 3": false,
-      },
-    },
-    {
-      name: "Task 2",
-      data: {
-        "Feld 1": false,
-        "Feld 2": false,
-        "Feld 3": false,
-      },
-    },
-    {
-      name: "Task 3",
-      data: {
-        "Feld 1": false,
-        "Feld 2": false,
-        "Feld 3": false,
-      },
-    },
-  ])
+  let availableTasks = $state<TaskMetadata[]>([])
 
   onMount(async () => {
     openProjectUrl = (await getValue(StorageKey.OpenProjectUrl)) || ""
@@ -50,6 +27,12 @@
     aiModel = (await getValue(StorageKey.AiModel)) || ""
     aiPrompt = (await getValue(StorageKey.AiPrompt)) || ""
     tasks = (await getValue<Task[]>(StorageKey.OpenProjectTasks)) || []
+
+    try {
+      availableTasks = await openProjectClient.getTaskNames()
+    } catch (error) {
+      showInfo((error as Error).message)
+    }
 
     isLoaded = true
   })
@@ -80,9 +63,10 @@
     saveValue(StorageKey.OpenProjectTasks, rawData)
   })
 
-  function addTask(newTask: Task) {
+  function addTask(newTask: TaskMetadata) {
     if (tasks.find((task) => task.name === newTask.name)) return
-    tasks.push(structuredClone($state.snapshot(newTask)))
+    // fetch detailed task data and push
+    // tasks.push(structuredClone($state.snapshot(newTask)))
   }
 
   function deleteTask(taskName: String) {

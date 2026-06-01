@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Task } from "../../../openProject/openProjectTypes"
+  import type { Task, TaskMetadata } from "../../../openProject/openProjectTypes"
   import NewTaskDropdown from "./NewTaskDropdown.svelte"
   import TaskListEntry from "./TaskListEntry.svelte"
 
   let { tasks, availableTasks, onSelect, onDelete } = $props<{
     tasks: Task[]
-    availableTasks: Task[]
-    onSelect: (task: Task) => void
+    availableTasks: TaskMetadata[]
+    onSelect: (task: TaskMetadata) => void
     onDelete: (taskName: String) => void
   }>()
 </script>

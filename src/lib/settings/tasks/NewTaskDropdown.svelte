@@ -1,16 +1,16 @@
 <script lang="ts">
-  import type { OpenProjectTask } from "../../../openProject/task"
+  import type { Task, TaskMetadata } from "../../../openProject/openProjectTypes"
 
   let { availableTasks, onSelect } = $props<{
-    availableTasks: OpenProjectTask[]
-    onSelect: (task: OpenProjectTask) => void
+    availableTasks: Task[]
+    onSelect: (task: TaskMetadata) => void
   }>()
 
-  let currentSelection = $state<OpenProjectTask | "">("")
+  let currentSelection = $state<TaskMetadata | null>(null)
   function handleChange() {
     if (currentSelection) {
       onSelect(currentSelection)
-      currentSelection = ""
+      currentSelection = null
     }
   }
 </script>
@@ -21,7 +21,7 @@
     bind:value={currentSelection}
     onchange={handleChange}
   >
-    <option disabled hidden selected value="">Neuer Task</option>
+    <option disabled hidden selected value={null}>Neuer Task</option>
     {#each availableTasks as task}
       <option value={task}>{task.name}</option>
     {/each}

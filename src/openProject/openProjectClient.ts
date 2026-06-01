@@ -1,38 +1,18 @@
 import { getValue, StorageKey } from "../storage"
-import type { Project } from "./openProjectTypes"
+import type { Project, TaskMetadata } from "./openProjectTypes"
 
 class OpenProjectClient {
-  private readonly baseUrl: () => Promise<string | null> | string
+  private readonly getBaseUrl: () => Promise<string | null> | string
   private readonly getToken: () => Promise<string | null> | string
 
   constructor(
     getBaseUrl: () => Promise<string | null> | string,
     getToken: () => Promise<string | null> | string,
   ) {
-    this.baseUrl = getBaseUrl
+    this.getBaseUrl = getBaseUrl
     this.getToken = getToken
   }
 
-  /**
-   * @throws {Error} if the request fails
-   */
-  public async getProjects() {
-    const url = `${await this.baseUrl()}/projects`
-    let response: Response = await this.getRequest(url)
-
-    const rawData = await response.json()
-    const elements = rawData._embedded?.elements ?? []
-    const projects: Project[] = elements.map((project: any) => ({
-      id: project.id,
-      name: project.name,
-    }))
-
-    return projects
-  }
-
-  /**
-   * @throws {Error} if the request fails
-   */
   private async getRequest(url: string) {
     let response: Response
     try {
@@ -49,6 +29,40 @@ class OpenProjectClient {
 
     if (!response.ok) throw new Error(`API Error: ${response.statusText}\nUrl: ${url}`)
     return response
+  }
+
+  /**
+   * @throws {Error} if the request fails
+   */
+  public async getProjects() {
+    const url = `${await this.getBaseUrl()}/projects`
+    const response: Response = await this.getRequest(url)
+
+    const rawData = await response.json()
+    const elements = rawData._embedded?.elements ?? []
+    const projects: Project[] = elements.map((project: any) => ({
+      id: project.id,
+      name: project.name,
+    }))
+
+    return projects
+  }
+
+  /**
+   * @throws {Error} if the request fails
+   */
+  public async getTaskNames() {
+    const url = `${await this.getBaseUrl()}/types`
+    const response: Response = await this.getRequest(url)
+
+    const rawData = await response.json()
+    const elements = rawData._embedded?.elements ?? []
+    const taskNames: TaskMetadata[] = elements.map((task: any) => ({
+      name: task.name,
+      id: task.id,
+    }))
+
+    return taskNames
   }
 }
 
