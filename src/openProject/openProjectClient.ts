@@ -18,9 +18,23 @@ class OpenProjectClient {
    */
   public async getProjects() {
     const url = `${await this.baseUrl()}/projects`
+    let response: Response = await this.getRequest(url)
 
+    const rawData = await response.json()
+    const elements = rawData._embedded?.elements ?? []
+    const projects: Project[] = elements.map((project: any) => ({
+      id: project.id,
+      name: project.name,
+    }))
+
+    return projects
+  }
+
+  /**
+   * @throws {Error} if the request fails
+   */
+  private async getRequest(url: string) {
     let response: Response
-
     try {
       response = await fetch(url, {
         method: "GET",
@@ -34,15 +48,7 @@ class OpenProjectClient {
     }
 
     if (!response.ok) throw new Error(`API Error: ${response.statusText}\nUrl: ${url}`)
-
-    const rawData = await response.json()
-    const elements = rawData._embedded?.elements ?? []
-    const projects: Project[] = elements.map((project: any) => ({
-      id: project.id,
-      name: project.name,
-    }))
-
-    return projects
+    return response
   }
 }
 
