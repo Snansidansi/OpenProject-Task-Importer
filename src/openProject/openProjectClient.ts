@@ -47,6 +47,6 @@ class OpenProjectClient {
 }
 
 export const openProjectClient = new OpenProjectClient(
-  async () => `http://${await getValue(StorageKey.OpenProjectUrl)}/api/v3`,
+  async () => `${await getValue(StorageKey.OpenProjectUrl)}/api/v3`,
   () => getValue(StorageKey.OpenProjectApiKey),
 )

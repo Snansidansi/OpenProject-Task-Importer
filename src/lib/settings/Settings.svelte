@@ -97,7 +97,7 @@
     <TextInput
       label="OpenProject URL"
       id="op_url"
-      placeholder="https://openproject-instanz.com"
+      placeholder="https://..."
       icon="link"
       bind:value={openProjectUrl}
     />
