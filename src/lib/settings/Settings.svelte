@@ -6,8 +6,8 @@
   import Footer from "./Footer.svelte"
   import { onMount } from "svelte"
   import { getValue, saveValue, StorageKey } from "../../storage"
-  import type { OpenProjectTask } from "../../task"
   import TaskSettings from "./tasks/TaskSettings.svelte"
+  import type { Task } from "../../openProject/openProjectTypes"
 
   let openProjectUrl = $state("")
   let openProjectApiKey = $state("")
@@ -15,8 +15,8 @@
   let aiModel = $state("")
   let aiPrompt = $state("")
   let isLoaded = $state(false)
-  let tasks = $state<OpenProjectTask[]>([])
-  let availableTasks = $state<OpenProjectTask[]>([
+  let tasks = $state<Task[]>([])
+  let availableTasks = $state<Task[]>([
     {
       name: "Task 1",
       data: {
@@ -49,7 +49,7 @@
     openRouterApiKey = (await getValue(StorageKey.OpenRouterApiKey)) || ""
     aiModel = (await getValue(StorageKey.AiModel)) || ""
     aiPrompt = (await getValue(StorageKey.AiPrompt)) || ""
-    tasks = (await getValue<OpenProjectTask[]>(StorageKey.OpenProjectTasks)) || []
+    tasks = (await getValue<Task[]>(StorageKey.OpenProjectTasks)) || []
 
     isLoaded = true
   })
@@ -80,7 +80,7 @@
     saveValue(StorageKey.OpenProjectTasks, rawData)
   })
 
-  function addTask(newTask: OpenProjectTask) {
+  function addTask(newTask: Task) {
     if (tasks.find((task) => task.name === newTask.name)) return
     tasks.push(structuredClone($state.snapshot(newTask)))
   }

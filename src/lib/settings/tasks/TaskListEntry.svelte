@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { OpenProjectTask } from "../../../openProject/task"
+  import type { Task } from "../../../openProject/openProjectTypes"
 
   let { task, onDelete } = $props<{
-    task: OpenProjectTask
+    task: Task
     onDelete: () => void
   }>()
 
