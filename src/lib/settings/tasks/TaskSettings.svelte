@@ -44,7 +44,7 @@
   disabled={disabled || !referenceProject}
 />
 
-{#each tasks as task}
+{#each tasks.toSorted((a: Task, b: Task) => a.name.localeCompare(b.name)) as task}
   <TaskListEntry
     task={task}
     onDelete={() => {
