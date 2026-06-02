@@ -50,7 +50,12 @@
                 id="task-{task.name}-{key}"
                 disabled={(value as TaskAttributeData).required}
               />
-              <span class="font-body-md text-on-surface">{key}</span>
+              <div class="flex items-center gap-2">
+                <span class="font-body-md text-on-surface">{key}</span>
+                <span class="text-xs text-gray-400 italic"
+                  >({(value as TaskAttributeData).type})</span
+                >
+              </div>
               {#if (value as TaskAttributeData).required}
                 <span class="ml-auto text-sm font-bold text-red-500">Pflichtfeld</span>
               {/if}
