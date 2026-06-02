@@ -5,6 +5,7 @@ export enum StorageKey {
   AiModel = "AiModel",
   AiPrompt = "Prompt",
   OpenProjectTasks = "OpenProjectTasks",
+  ReferenceProject = "ReferenceProject",
 }
 
 export async function saveValue(key: StorageKey, value: any): Promise<void> {

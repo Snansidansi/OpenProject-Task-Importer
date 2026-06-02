@@ -1,17 +1,49 @@
 <script lang="ts">
-  import type { Task, TaskMetadata } from "../../../openProject/openProjectTypes"
+  import type { Task, TaskMetadata, Project } from "../../../openProject/openProjectTypes"
   import NewTaskDropdown from "./NewTaskDropdown.svelte"
   import TaskListEntry from "./TaskListEntry.svelte"
+  import ProjectSelection from "../../task-import/ProjectSelection.svelte"
 
-  let { tasks, availableTasks, onSelect, onDelete } = $props<{
+  let {
+    tasks,
+    availableTasks,
+    projects,
+    referenceProject = $bindable(),
+    onSelect,
+    onDelete,
+    disabled = false,
+  } = $props<{
     tasks: Task[]
     availableTasks: TaskMetadata[]
+    projects: Project[]
+    referenceProject: Project | null
     onSelect: (task: TaskMetadata) => void
     onDelete: (taskUrl: String) => void
+    disabled?: boolean
   }>()
 </script>
 
-<NewTaskDropdown availableTasks={availableTasks} onSelect={onSelect} />
+<div class="mb-3">
+  <ProjectSelection
+    projects={projects}
+    bind:selectedProject={referenceProject}
+    label="Referenzprojekt"
+    disabled={disabled}
+  />
+  {#if !referenceProject}
+    <div class="text-error mt-1 flex items-center gap-1 text-sm">
+      <span class="material-symbols-outlined text-sm text-red-600">info</span>
+      <span class="text-red-600">Referenzprojekt muss ausgewählt werden</span>
+    </div>
+  {/if}
+</div>
+
+<NewTaskDropdown
+  availableTasks={availableTasks}
+  onSelect={onSelect}
+  disabled={disabled || !referenceProject}
+/>
+
 {#each tasks as task}
   <TaskListEntry
     task={task}

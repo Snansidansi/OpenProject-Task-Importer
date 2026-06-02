@@ -4,8 +4,22 @@
   import Settings from "./lib/settings/Settings.svelte"
   import TaskImport from "./lib/task-import/TaskImport.svelte"
   import TopBar from "./lib/TopBar.svelte"
+  import { onMount } from "svelte"
+  import type { Project } from "./openProject/openProjectTypes"
+  import { openProjectClient } from "./openProject/openProjectClient"
+  import { showInfo } from "./infoStore"
 
-  let showImport = true
+  let showImport = $state(true)
+  let projects = $state<Project[]>([])
+
+  onMount(async () => {
+    try {
+      const unsorted = await openProjectClient.getProjects()
+      projects = unsorted.sort((a, b) => a.name.localeCompare(b.name))
+    } catch (error) {
+      showInfo((error as Error).message)
+    }
+  })
 </script>
 
 <div class="flex max-h-150 w-full flex-col overflow-hidden">
@@ -16,9 +30,9 @@
   >
     <InfoPopup />
     {#if showImport}
-      <TaskImport />
+      <TaskImport {projects} />
     {:else}
-      <Settings />
+      <Settings {projects} />
     {/if}
   </main>
 

@@ -43,7 +43,7 @@ class OpenProjectClient {
     const rawData = await response.json()
     const elements = rawData._embedded?.elements ?? []
     const projects: Project[] = elements.map((project: any) => ({
-      id: project._links.self.href,
+      url: project._links.self.href,
       name: project.name,
     }))
 
