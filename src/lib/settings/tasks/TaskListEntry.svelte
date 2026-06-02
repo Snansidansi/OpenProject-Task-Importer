@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Task, TaskAttributeData } from "../../../openProject/openProjectTypes"
-  import TextInput from "../TextInput.svelte"
+  import TaskAttributeEntry from "./TaskAttributeEntry.svelte"
 
   let { task, onDelete } = $props<{
     task: Task
@@ -36,41 +36,7 @@
   <div class="expandable-content">
     <div class="overflow-hidden">
       {#each Object.entries(task.data).sort((a, b) => a[0].localeCompare(b[0])) as [key, value]}
-        <label for="task-{task.name}-{key}">
-          <div
-            class="px-stack-md pb-stack-md border-outline-variant/20 pt-stack-sm space-y-2 border-t"
-          >
-            <div
-              class="gap-stack-md hover:bg-surface-variant/30 flex items-center rounded-lg p-3 transition-colors"
-            >
-              <input
-                bind:checked={task.data[key].allowedForLLM}
-                class="border-outline-variant text-primary focus:ring-primary h-5 w-5 rounded"
-                type="checkbox"
-                id="task-{task.name}-{key}"
-                disabled={(value as TaskAttributeData).required}
-              />
-              <div class="flex items-center gap-2">
-                <span class="font-body-md text-on-surface">{key}</span>
-                <span class="text-xs text-gray-400 italic"
-                  >({(value as TaskAttributeData).type})</span
-                >
-              </div>
-              {#if (value as TaskAttributeData).required}
-                <span class="ml-auto text-sm font-bold text-red-500">Pflichtfeld</span>
-              {/if}
-            </div>
-            <div class="px-stack-md">
-              <TextInput
-                id={`task-${task.name}-${key}-note`}
-                label=""
-                placeholder="Notiz für LLM"
-                icon="info"
-                bind:value={(value as TaskAttributeData).llmNote}
-              />
-            </div>
-          </div>
-        </label>
+        <TaskAttributeEntry name={key} data={value as TaskAttributeData} />
       {/each}
       <div class="px-stack-md pb-stack-md border-outline-variant/20 pt-stack-sm space-y-2 border-t">
         <button
