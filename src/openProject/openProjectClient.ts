@@ -13,8 +13,9 @@ class OpenProjectClient {
     this.getToken = getToken
   }
 
-  private async request(url: string, method: "GET" | "POST", body?: any) {
+  private async request(urlSuffix: string, method: "GET" | "POST", body?: any) {
     let response: Response
+    const url = (await this.getBaseUrl()) + "/api/v3/" + urlSuffix
     try {
       response = await fetch(url, {
         method: method,
@@ -36,13 +37,12 @@ class OpenProjectClient {
    * @throws {Error} if the request fails
    */
   public async getProjects() {
-    const url = `${await this.getBaseUrl()}/projects`
-    const response: Response = await this.request(url, "GET")
+    const response: Response = await this.request("projects", "GET")
 
     const rawData = await response.json()
     const elements = rawData._embedded?.elements ?? []
     const projects: Project[] = elements.map((project: any) => ({
-      id: project.id,
+      id: project._links.self.href,
       name: project.name,
     }))
 
@@ -53,8 +53,7 @@ class OpenProjectClient {
    * @throws {Error} if the request fails
    */
   public async getTaskNames() {
-    const url = `${await this.getBaseUrl()}/types`
-    const response: Response = await this.request(url, "GET")
+    const response: Response = await this.request("types", "GET")
 
     const rawData = await response.json()
     const elements = rawData._embedded?.elements ?? []
@@ -68,6 +67,6 @@ class OpenProjectClient {
 }
 
 export const openProjectClient = new OpenProjectClient(
-  async () => `${await getValue(StorageKey.OpenProjectUrl)}/api/v3`,
+  async () => `${await getValue(StorageKey.OpenProjectUrl)}`,
   () => getValue(StorageKey.OpenProjectApiKey),
 )
