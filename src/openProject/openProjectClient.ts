@@ -5,6 +5,30 @@ import type { Project, Task, TaskAttributeData, TaskMetadata } from "./openProje
 class OpenProjectClient {
   private readonly getBaseUrl: () => Promise<string | null> | string
   private readonly getToken: () => Promise<string | null> | string
+  private readonly workPackageTypeBlacklist = [
+    "_links",
+    "_dependencies",
+    "_attributeGroups",
+    "id",
+    "lockVersion",
+    "createdAt",
+    "updatedAt",
+    "subject",
+    "scheduleManually",
+    "ignoreNonWorkingDays",
+    "remainingTime",
+    "percentageDone",
+    "project",
+    "subject",
+    "parent",
+    "status",
+    "sprint",
+    "version",
+    "category",
+    "priority",
+    "type",
+  ]
+  private readonly workPackageTypeBlackList = ["Version"]
 
   constructor(
     getBaseUrl: () => Promise<string | null> | string,
@@ -69,10 +93,11 @@ class OpenProjectClient {
   /**
    * @throws {Error} if the request fails
    */
-  public async getTaskDetails(taskURL: string): Promise<Task> {
+  public async getTaskDetails(taskURL: string, referenceProjectURL: string): Promise<Task> {
     const body = {
       _links: {
         type: { href: taskURL },
+        project: { href: referenceProjectURL },
       },
     }
 
@@ -85,36 +110,17 @@ class OpenProjectClient {
     const taskName = payload._links?.type?.title
     if (!taskName) throw new Error("Task name not found")
 
-    const blacklist = [
-      "_links",
-      "_dependencies",
-      "_attributeGroups",
-      "id",
-      "lockVersion",
-      "createdAt",
-      "updatedAt",
-      "subject",
-      "scheduleManually",
-      "ignoreNonWorkingDays",
-      "remainingTime",
-      "percentageDone",
-      "project",
-      "subject",
-      "parent",
-      "status",
-      "sprint",
-      "version",
-      "category",
-      "priority",
-      "type",
-    ]
-
     const taskData: Record<string, TaskAttributeData> = {}
 
     Object.keys(schema).forEach((key) => {
       const field = schema[key]
 
-      if (field && field.writable === true && !blacklist.includes(key)) {
+      if (
+        field &&
+        field.writable === true &&
+        !this.workPackageTypeBlacklist.includes(key) &&
+        !this.workPackageTypeBlackList.includes(field.type)
+      ) {
         const isRequired = field.required ?? false
 
         taskData[field.name] = {
@@ -141,8 +147,11 @@ class OpenProjectClient {
    *
    * @throws {Error} if the request fails
    */
-  public async updateTaskDetails(task: Task): Promise<{ task: Task; taskChanged: Boolean }> {
-    const newTask = await this.getTaskDetails(task.url)
+  public async updateTaskDetails(
+    task: Task,
+    referenceProjectURL: string,
+  ): Promise<{ task: Task; taskChanged: Boolean }> {
+    const newTask = await this.getTaskDetails(task.url, referenceProjectURL)
     const mergedData: Record<string, TaskAttributeData> = {}
 
     const allKeys = new Set([...Object.keys(task.data), ...Object.keys(newTask.data)])
@@ -156,6 +165,8 @@ class OpenProjectClient {
         mergedData[key] = oldData
       } else if (newData) {
         mergedData[key] = newData
+        taskChanged = true
+      } else if (oldData) {
         taskChanged = true
       }
     }

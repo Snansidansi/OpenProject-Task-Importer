@@ -104,9 +104,14 @@
   })
 
   async function addTask(newTask: TaskMetadata) {
+    if (!referenceProject) return
+
     const existingTask = tasks.find((task) => task.url === newTask.url)
     if (existingTask) {
-      const updatedTask = await openProjectClient.updateTaskDetails(existingTask)
+      const updatedTask = await openProjectClient.updateTaskDetails(
+        existingTask,
+        referenceProject.url,
+      )
       if (updatedTask.taskChanged) {
         deleteTask(newTask.url)
         tasks.push(updatedTask.task)
@@ -114,7 +119,7 @@
       return
     }
     try {
-      const task = await openProjectClient.getTaskDetails(newTask.url)
+      const task = await openProjectClient.getTaskDetails(newTask.url, referenceProject.url)
       tasks.push(task)
     } catch (error) {
       showInfo((error as Error).message)
