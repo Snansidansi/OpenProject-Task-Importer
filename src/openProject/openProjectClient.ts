@@ -1,3 +1,4 @@
+import { showInfo } from "../infoStore"
 import { getValue, StorageKey } from "../storage"
 import type { Project, Task, TaskAttributeData, TaskMetadata } from "./openProjectTypes"
 
@@ -129,6 +130,46 @@ class OpenProjectClient {
       name: taskName,
       url: taskURL,
       data: taskData,
+    }
+  }
+
+  /**
+   * Fetches updated task details and merges them with the provided task.
+   * - Fields missing in the new task are removed.
+   * - Fields present in the new task but not in the old one are added with default values.
+   * - Fields present in both retain the old task's values.
+   *
+   * @throws {Error} if the request fails
+   */
+  public async updateTaskDetails(task: Task): Promise<{ task: Task; taskChanged: Boolean }> {
+    const newTask = await this.getTaskDetails(task.url)
+    const mergedData: Record<string, TaskAttributeData> = {}
+
+    const allKeys = new Set([...Object.keys(task.data), ...Object.keys(newTask.data)])
+
+    let taskChanged = false
+    for (const key of allKeys) {
+      const oldData = task.data[key]
+      const newData = newTask.data[key]
+
+      if (oldData && newData) {
+        mergedData[key] = oldData
+      } else if (newData) {
+        mergedData[key] = newData
+        taskChanged = true
+      }
+    }
+
+    if (newTask.name !== task.name) {
+      taskChanged = true
+    }
+    return {
+      task: {
+        name: newTask.name,
+        url: newTask.url,
+        data: mergedData,
+      },
+      taskChanged: taskChanged,
     }
   }
 }

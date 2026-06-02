@@ -64,7 +64,15 @@
   })
 
   async function addTask(newTask: TaskMetadata) {
-    if (tasks.find((task) => task.name === newTask.name)) return
+    const existingTask = tasks.find((task) => task.url === newTask.url)
+    if (existingTask) {
+      const updatedTask = await openProjectClient.updateTaskDetails(existingTask)
+      if (updatedTask.taskChanged) {
+        deleteTask(newTask.url)
+        tasks.push(updatedTask.task)
+      }
+      return
+    }
     try {
       const task = await openProjectClient.getTaskDetails(newTask.url)
       tasks.push(task)
