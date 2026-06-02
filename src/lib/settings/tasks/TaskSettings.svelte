@@ -7,7 +7,7 @@
     tasks: Task[]
     availableTasks: TaskMetadata[]
     onSelect: (task: TaskMetadata) => void
-    onDelete: (taskName: String) => void
+    onDelete: (taskUrl: String) => void
   }>()
 </script>
 
@@ -16,7 +16,7 @@
   <TaskListEntry
     task={task}
     onDelete={() => {
-      onDelete(task.name)
+      onDelete(task.url)
     }}
   />
 {/each}

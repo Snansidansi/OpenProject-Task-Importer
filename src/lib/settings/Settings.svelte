@@ -73,8 +73,8 @@
     }
   }
 
-  function deleteTask(taskName: String) {
-    tasks = tasks.filter((task) => task.name !== taskName)
+  function deleteTask(taskUrl: String) {
+    tasks = tasks.filter((task) => task.url !== taskUrl)
   }
 </script>
 
