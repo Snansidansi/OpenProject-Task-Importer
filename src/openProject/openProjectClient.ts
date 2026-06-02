@@ -13,18 +13,19 @@ class OpenProjectClient {
     this.getToken = getToken
   }
 
-  private async getRequest(url: string) {
+  private async request(url: string, method: "GET" | "POST", body?: any) {
     let response: Response
     try {
       response = await fetch(url, {
-        method: "GET",
+        method: method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${await this.getToken()}`,
         },
+        ...(body && { body: JSON.stringify(body) }),
       })
     } catch (error) {
-      throw new Error(`failed to fetch url with get: ${url}`, { cause: error })
+      throw new Error(`failed to fetch url with ${method}: ${url}`, { cause: error })
     }
 
     if (!response.ok) throw new Error(`API Error: ${response.statusText}\nUrl: ${url}`)
@@ -36,7 +37,7 @@ class OpenProjectClient {
    */
   public async getProjects() {
     const url = `${await this.getBaseUrl()}/projects`
-    const response: Response = await this.getRequest(url)
+    const response: Response = await this.request(url, "GET")
 
     const rawData = await response.json()
     const elements = rawData._embedded?.elements ?? []
@@ -53,7 +54,7 @@ class OpenProjectClient {
    */
   public async getTaskNames() {
     const url = `${await this.getBaseUrl()}/types`
-    const response: Response = await this.getRequest(url)
+    const response: Response = await this.request(url, "GET")
 
     const rawData = await response.json()
     const elements = rawData._embedded?.elements ?? []
