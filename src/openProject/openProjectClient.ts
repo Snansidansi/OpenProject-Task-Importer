@@ -59,7 +59,7 @@ class OpenProjectClient {
     const elements = rawData._embedded?.elements ?? []
     const taskNames: TaskMetadata[] = elements.map((task: any) => ({
       name: task.name,
-      id: task.id,
+      url: task._links.self.href,
     }))
 
     return taskNames

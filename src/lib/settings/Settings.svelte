@@ -66,6 +66,7 @@
   function getExampleTask(): Task {
     return {
       name: "Beispielaufgabe",
+      url: "example",
       data: {
         "Feld 1": { allowedForLLM: true, required: true, llmNote: "" },
         "Feld 2": { allowedForLLM: false, required: false, llmNote: "" },

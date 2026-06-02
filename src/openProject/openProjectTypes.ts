@@ -11,10 +11,11 @@ export type TaskAttributeData = {
 
 export type Task = {
   name: string
+  url: string
   data: Record<string, TaskAttributeData>
 }
 
 export type TaskMetadata = {
   name: string
-  id: number
+  url: string
 }
