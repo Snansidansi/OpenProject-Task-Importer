@@ -26,7 +26,8 @@
     openRouterApiKey = (await getValue(StorageKey.OpenRouterApiKey)) || ""
     aiModel = (await getValue(StorageKey.AiModel)) || ""
     aiPrompt = (await getValue(StorageKey.AiPrompt)) || ""
-    tasks = (await getValue<Task[]>(StorageKey.OpenProjectTasks)) || []
+    // tasks = (await getValue<Task[]>(StorageKey.OpenProjectTasks)) || []
+    tasks = [getExampleTask()]
 
     try {
       availableTasks = await openProjectClient.getTaskNames()
@@ -62,6 +63,16 @@
     const rawData = $state.snapshot(tasks)
     saveValue(StorageKey.OpenProjectTasks, rawData)
   })
+
+  function getExampleTask(): Task {
+    return {
+      name: "Beispielaufgabe",
+      data: {
+        "Feld 1": { allowedForLLM: true, required: true },
+        "Feld 2": { allowedForLLM: false, required: false },
+      },
+    }
+  }
 
   function addTask(newTask: TaskMetadata) {
     if (tasks.find((task) => task.name === newTask.name)) return

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Task } from "../../../openProject/openProjectTypes"
+  import type { Task, TaskAttributeData } from "../../../openProject/openProjectTypes"
 
   let { task, onDelete } = $props<{
     task: Task
@@ -47,8 +47,12 @@
                 class="border-outline-variant text-primary focus:ring-primary h-5 w-5 rounded"
                 type="checkbox"
                 id="task-{task.name}-{key}"
+                disabled={(value as TaskAttributeData).required}
               />
               <span class="font-body-md text-on-surface-variant">{key}</span>
+              {#if (value as TaskAttributeData).required}
+                <span class="ml-auto text-sm font-bold text-red-500">Pflichtfeld</span>
+              {/if}
             </div>
           </div>
         </label>
