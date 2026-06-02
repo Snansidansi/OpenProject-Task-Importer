@@ -63,22 +63,14 @@
     saveValue(StorageKey.OpenProjectTasks, rawData)
   })
 
-  function getExampleTask(): Task {
-    return {
-      name: "Beispielaufgabe",
-      url: "example",
-      data: {
-        "Feld 1": { allowedForLLM: true, required: true, llmNote: "" },
-        "Feld 2": { allowedForLLM: false, required: false, llmNote: "" },
-      },
-    }
-  }
-
-  function addTask(newTask: TaskMetadata) {
+  async function addTask(newTask: TaskMetadata) {
     if (tasks.find((task) => task.name === newTask.name)) return
-    // fetch detailed task data and push
-    // tasks.push(structuredClone($state.snapshot(newTask)))
-    tasks.push(getExampleTask())
+    try {
+      const task = await openProjectClient.getTaskDetails(newTask.url)
+      tasks.push(task)
+    } catch (error) {
+      showInfo((error as Error).message)
+    }
   }
 
   function deleteTask(taskName: String) {

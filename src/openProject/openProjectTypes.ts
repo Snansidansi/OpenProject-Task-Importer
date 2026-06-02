@@ -7,6 +7,7 @@ export type TaskAttributeData = {
   allowedForLLM: boolean
   required: boolean
   llmNote: string
+  type: string
 }
 
 export type Task = {
