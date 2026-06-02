@@ -7,6 +7,8 @@
     <a
       class="text-primary font-label-md flex items-center gap-1 hover:underline"
       href="https://github.com/Snansidansi/OpenProject-Task-Importer"
+      rel="noopener"
+      target="_blank"
     >
       Addon Github Link
     </a>
