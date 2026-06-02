@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Task, TaskAttributeData } from "../../../openProject/openProjectTypes"
+  import TextInput from "../TextInput.svelte"
 
   let { task, onDelete } = $props<{
     task: Task
@@ -43,16 +44,25 @@
               class="gap-stack-md hover:bg-surface-variant/30 flex items-center rounded-lg p-3 transition-colors"
             >
               <input
-                bind:checked={task.data[key]}
+                bind:checked={task.data[key].allowedForLLM}
                 class="border-outline-variant text-primary focus:ring-primary h-5 w-5 rounded"
                 type="checkbox"
                 id="task-{task.name}-{key}"
                 disabled={(value as TaskAttributeData).required}
               />
-              <span class="font-body-md text-on-surface-variant">{key}</span>
+              <span class="font-body-md text-on-surface">{key}</span>
               {#if (value as TaskAttributeData).required}
                 <span class="ml-auto text-sm font-bold text-red-500">Pflichtfeld</span>
               {/if}
+            </div>
+            <div class="px-stack-md">
+              <TextInput
+                id={`task-${task.name}-${key}-note`}
+                label=""
+                placeholder="Notiz für LLM"
+                icon="info"
+                bind:value={(value as TaskAttributeData).llmNote}
+              />
             </div>
           </div>
         </label>

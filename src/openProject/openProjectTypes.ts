@@ -6,6 +6,7 @@ export type Project = {
 export type TaskAttributeData = {
   allowedForLLM: boolean
   required: boolean
+  llmNote: string
 }
 
 export type Task = {

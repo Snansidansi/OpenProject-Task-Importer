@@ -26,8 +26,7 @@
     openRouterApiKey = (await getValue(StorageKey.OpenRouterApiKey)) || ""
     aiModel = (await getValue(StorageKey.AiModel)) || ""
     aiPrompt = (await getValue(StorageKey.AiPrompt)) || ""
-    // tasks = (await getValue<Task[]>(StorageKey.OpenProjectTasks)) || []
-    tasks = [getExampleTask()]
+    tasks = (await getValue<Task[]>(StorageKey.OpenProjectTasks)) || []
 
     try {
       availableTasks = await openProjectClient.getTaskNames()
@@ -68,8 +67,8 @@
     return {
       name: "Beispielaufgabe",
       data: {
-        "Feld 1": { allowedForLLM: true, required: true },
-        "Feld 2": { allowedForLLM: false, required: false },
+        "Feld 1": { allowedForLLM: true, required: true, llmNote: "" },
+        "Feld 2": { allowedForLLM: false, required: false, llmNote: "" },
       },
     }
   }
@@ -78,6 +77,7 @@
     if (tasks.find((task) => task.name === newTask.name)) return
     // fetch detailed task data and push
     // tasks.push(structuredClone($state.snapshot(newTask)))
+    tasks.push(getExampleTask())
   }
 
   function deleteTask(taskName: String) {
