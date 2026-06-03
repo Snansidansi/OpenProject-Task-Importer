@@ -132,7 +132,6 @@ class OpenProjectClient {
         taskData[field.name] = {
           required: isRequired,
           allowedForLLM: isRequired,
-          llmNote: "",
           type: field.type,
         }
 

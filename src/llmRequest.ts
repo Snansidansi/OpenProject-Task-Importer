@@ -1,18 +1,18 @@
-import type { TaskAttributeData } from "./openProject/openProjectTypes"
+import type { Task, TaskAttributeData } from "./openProject/openProjectTypes"
 
 export class LlmRequest {
   private systemPrompt: string
   private userPrompt: string | undefined
   private types: Record<string, string> | undefined
   private pdfContent: string
-  private taskSchemas: Record<string, any> | undefined
+  private availableTasks: Task[] | undefined
 
   constructor() {
     this.systemPrompt = ""
     this.userPrompt = undefined
     this.types = {}
     this.pdfContent = ""
-    this.taskSchemas = undefined
+    this.availableTasks = undefined
   }
 
   public setSystemPrompt(prompt: string): this {
@@ -38,16 +38,16 @@ export class LlmRequest {
     return this
   }
 
-  public addTaskSchema(name: string, taskSchema: any): this {
-    if (!this.taskSchemas) {
-      this.taskSchemas = {}
+  public addAvailableTask(taskSchema: Task): this {
+    if (!this.availableTasks) {
+      this.availableTasks = []
     }
-    this.taskSchemas[name] = taskSchema
+    this.availableTasks.push(taskSchema)
     return this
   }
 
-  public setTaskTypes(taskTypes: Record<string, any>): this {
-    this.taskSchemas = taskTypes
+  public setAvailableTasks(taskSchemas: Task[]): this {
+    this.availableTasks = taskSchemas
     return this
   }
 
@@ -74,8 +74,8 @@ export class LlmRequest {
       parts.push(`Available Task Types:\n${typesJson}`)
     }
 
-    if (this.taskSchemas && Object.keys(this.taskSchemas).length > 0) {
-      const taskTypesJson = JSON.stringify(this.taskSchemas, null, 2)
+    if (this.availableTasks && Object.keys(this.availableTasks).length > 0) {
+      const taskTypesJson = this.transformTasksToJson(this.availableTasks)
       parts.push(`Task Types:\n${taskTypesJson}`)
     }
 
@@ -84,6 +84,44 @@ export class LlmRequest {
     }
 
     return parts.join("\n\n")
+  }
+
+  private transformTasksToJson(originalTasks: Task[]): string {
+    const tasksCopy = structuredClone(originalTasks) as Task[]
+
+    const flattenedTasks = tasksCopy.map((item) => {
+      delete (item as any).url
+
+      const flattenedItem: any = {
+        name: item.name,
+        child: {
+          llmNote: "nest subtasks here",
+          required: false,
+        },
+      }
+
+      if (item.data) {
+        for (const [key, field] of Object.entries(item.data)) {
+          if (!field.allowedForLLM) {
+            continue
+          }
+
+          delete (field as any).allowedForLLM
+
+          if (field.values && Array.isArray(field.values)) {
+            field.values.forEach((val: any) => {
+              delete val.type
+            })
+          }
+
+          flattenedItem[key] = field
+        }
+      }
+
+      return flattenedItem
+    })
+
+    return JSON.stringify(flattenedTasks, null, 2)
   }
 }
 

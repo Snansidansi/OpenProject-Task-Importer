@@ -12,7 +12,7 @@ export type AttributeValues = {
 export type TaskAttributeData = {
   allowedForLLM: boolean
   required: boolean
-  llmNote: string
+  llmNote?: string
   type: string
   values?: AttributeValues[]
 }

@@ -36,7 +36,7 @@ async function startProcessing(message: StartProcessing): Promise<string> {
 
   const llmPrompt = buildLllmPrompt(message, availableTasks, availableUsers, userPrompt)
 
-  return JSON.stringify(availableTasks)
+  return llmPrompt
 }
 
 function buildLllmPrompt(
@@ -48,7 +48,7 @@ function buildLllmPrompt(
   let llmRequest = new LlmRequest()
     .setSystemPrompt(defaultSystemPrompt)
     .setPdfContent(message.extractedText)
-    .setTaskTypes(availableTasks)
+    .setAvailableTasks(availableTasks)
     .setTypes(defaultTypes)
 
   if (availableUsers.length > 0) {
@@ -97,9 +97,9 @@ async function validateAndRefreshTaskSchemas(): Promise<string | null> {
       changedTaskSchemaNames.push(updatedTask.name)
     }
 
-      const index = storedTasks.findIndex((t) => t.url === task.url)
-      if (index !== -1) {
-        storedTasks[index] = updatedTask
+    const index = storedTasks.findIndex((t) => t.url === task.url)
+    if (index !== -1) {
+      storedTasks[index] = updatedTask
     }
   }
 
