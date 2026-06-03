@@ -180,7 +180,6 @@
         label="AI Prompt"
         id="ki_prompt"
         placeholder="Enter system instructions here..."
-        rows={4}
         bind:value={aiPrompt}
       />
     </Accordion>
