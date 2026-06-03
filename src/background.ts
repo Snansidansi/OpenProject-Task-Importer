@@ -26,23 +26,24 @@ chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, se
 })
 
 async function startProcessing(message: StartProcessing): Promise<string> {
-  const errorMessage = await refreshAndGetTaskSchemas(message.selectedProject)
-  if (errorMessage) {
-    return errorMessage
+  const tasks = await refreshAndGetTaskSchemas(message.selectedProject)
+  if (typeof tasks === "string") {
+    return tasks
   }
+
+  const availableUsers = openProjectClient.getUsersForProject(message.selectedProject)
 
   return message.extractedText
 }
 
-async function refreshAndGetTaskSchemas(project: Project): Promise<string | null> {
+async function refreshAndGetTaskSchemas(project: Project): Promise<string | Task[]> {
   const validationOrSchemaUpdateResult = await validateAndRefreshTaskSchemas()
   if (validationOrSchemaUpdateResult) {
     return validationOrSchemaUpdateResult
   }
 
   const tasksToUpdate = await fetchUpdatedTaskDetails(project)
-  const finalTasks = mergeTaskData(tasksToUpdate)
-  return null
+  return mergeTaskData(tasksToUpdate)
 }
 
 async function validateAndRefreshTaskSchemas(): Promise<string | null> {

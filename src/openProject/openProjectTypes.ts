@@ -27,3 +27,8 @@ export type TaskMetadata = {
   name: string
   url: string
 }
+
+export type User = {
+  name: string
+  url: string
+}

@@ -6,6 +6,7 @@ import type {
   Task,
   TaskAttributeData,
   TaskMetadata,
+  User,
 } from "./openProjectTypes"
 
 class OpenProjectClient {
@@ -205,6 +206,22 @@ class OpenProjectClient {
       },
       taskChanged: taskChanged,
     }
+  }
+
+  public async getUsersForProject(project: Project): Promise<User[]> {
+    const response: Response = await this.request(
+      `projects/${project.url.split("/").pop()}/available_assignees`,
+      "GET",
+    )
+
+    const rawData = await response.json()
+    const elements = rawData._embedded?.elements ?? []
+    const users: User[] = elements.map((user: any) => ({
+      name: user.name,
+      url: user._links?.self?.href,
+    }))
+
+    return users
   }
 }
 
