@@ -3,13 +3,13 @@
 </script>
 
 {#if $infoMessage}
-  <div
-    class="fixed inset-0 z-50 my-2 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-  >
-    <div class="relative w-full max-w-md rounded-lg border border-red-100 bg-white p-6 shadow-xl">
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+    <div
+      class="relative flex max-h-[85vh] w-full max-w-md flex-col rounded-lg border border-red-100 bg-white p-6 shadow-xl"
+    >
       <button
         onclick={clearInfo}
-        class="absolute top-3 right-3 text-gray-400 transition-colors hover:text-gray-600"
+        class="absolute top-3 right-3 z-10 text-gray-400 transition-colors hover:text-gray-600"
         aria-label="Schließen"
       >
         <svg
@@ -28,10 +28,11 @@
         </svg>
       </button>
 
-      <div class="flex flex-col items-center text-center">
-        <h3 class="text-lg font-semibold text-gray-900">Information</h3>
-        <div class="mt-2 max-h-64 overflow-y-auto px-2">
-          <p class="text-sm text-gray-600">{$infoMessage}</p>
+      <div class="flex min-h-0 flex-1 flex-col items-center text-center">
+        <h3 class="mb-2 text-lg font-semibold text-gray-900">Information</h3>
+
+        <div class="w-full overflow-y-auto px-2">
+          <p class="text-left text-sm break-all text-gray-600">{$infoMessage}</p>
         </div>
       </div>
     </div>
