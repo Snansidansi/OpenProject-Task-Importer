@@ -143,7 +143,11 @@ class OpenProjectClient {
             const href = value._links?.self?.href
 
             if (href) {
-              values.push(href)
+              values.push({
+                name: value.name,
+                value: href,
+                type: "link",
+              })
             }
           }
         })
