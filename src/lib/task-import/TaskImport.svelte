@@ -46,7 +46,6 @@
     let extractedText: string
     try {
       extractedText = await extractTextFromPdf(selectedFile)
-      showInfo(extractedText)
     } catch (error) {
       showInfo((error as Error).message)
       return

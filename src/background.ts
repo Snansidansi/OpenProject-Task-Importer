@@ -1,6 +1,7 @@
-import type { Project, Task } from "./openProject/openProjectTypes"
+import type { Project, Task, User } from "./openProject/openProjectTypes"
 import { openProjectClient } from "./openProject/openProjectClient"
 import { getValue, saveValue, StorageKey } from "./storage"
+import { defaultSystemPrompt, defaultTypes, LlmRequest } from "./llmRequest"
 
 export type BackgroundOperationMessage = StartProcessing | StopProcessing
 
@@ -26,14 +27,42 @@ chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, se
 })
 
 async function startProcessing(message: StartProcessing): Promise<string> {
-  const tasks = await refreshAndGetTaskSchemas(message.selectedProject)
-  if (typeof tasks === "string") {
-    return tasks
+  const availableTasks = await refreshAndGetTaskSchemas(message.selectedProject)
+  if (typeof availableTasks === "string") {
+    return availableTasks
+  }
+  const availableUsers = await openProjectClient.getUsersForProject(message.selectedProject)
+  const userPrompt = await getValue(StorageKey.AiPrompt)
+
+  const llmPrompt = buildLllmPrompt(message, availableTasks, availableUsers, userPrompt)
+
+  return JSON.stringify(availableTasks)
+}
+
+function buildLllmPrompt(
+  message: StartProcessing,
+  availableTasks: Task[],
+  availableUsers: User[],
+  userPrompt: string | null,
+): string {
+  let llmRequest = new LlmRequest()
+    .setSystemPrompt(defaultSystemPrompt)
+    .setPdfContent(message.extractedText)
+    .setTaskTypes(availableTasks)
+    .setTypes(defaultTypes)
+
+  if (availableUsers.length > 0) {
+    llmRequest = llmRequest.addType(
+      "User",
+      `Available Values (use fill the field with the urls): ${JSON.stringify(availableUsers)}`,
+    )
   }
 
-  const availableUsers = openProjectClient.getUsersForProject(message.selectedProject)
+  if (userPrompt) {
+    llmRequest = llmRequest.setUserPrompt(userPrompt)
+  }
 
-  return message.extractedText
+  return llmRequest.build()
 }
 
 async function refreshAndGetTaskSchemas(project: Project): Promise<string | Task[]> {

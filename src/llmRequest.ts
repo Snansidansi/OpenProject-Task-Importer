@@ -3,7 +3,7 @@ import type { TaskAttributeData } from "./openProject/openProjectTypes"
 export class LlmRequest {
   private systemPrompt: string
   private userPrompt: string | undefined
-  private types: Record<string, TaskAttributeData> | undefined
+  private types: Record<string, string> | undefined
   private pdfContent: string
   private taskSchemas: Record<string, any> | undefined
 
@@ -25,15 +25,15 @@ export class LlmRequest {
     return this
   }
 
-  public addType(name: string, type: TaskAttributeData): this {
+  public addType(name: string, info: string): this {
     if (!this.types) {
       this.types = {}
     }
-    this.types[name] = type
+    this.types[name] = info
     return this
   }
 
-  public setTypes(types: Record<string, TaskAttributeData>): this {
+  public setTypes(types: Record<string, string>): this {
     this.types = types
     return this
   }
@@ -87,7 +87,7 @@ export class LlmRequest {
   }
 }
 
-export const systemPrompt =
+export const defaultSystemPrompt =
   "You are an project management assistant that has the job to extract task form a given PDF content (at the end of the prompt)." +
   "You are given one or more json task schemas in this prompt which are your options." +
   "Its your job to choose a task type." +
@@ -104,3 +104,8 @@ export const systemPrompt =
   "No introduction or smalltalk!" +
   "If you want to make one task a subtask of another task (or the user wants so) nest them in the specified child field." +
   "One task can have zero or more subtasks but a task can not ever have two parents!"
+
+export const defaultTypes: Record<string, string> = {
+  Date: "Date in the format: YYYY-MM-DD",
+  Duration: "ISO 8601 duration format",
+}
