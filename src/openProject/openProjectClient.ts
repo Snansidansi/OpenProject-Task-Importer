@@ -19,7 +19,6 @@ class OpenProjectClient {
     "remainingTime",
     "percentageDone",
     "project",
-    "subject",
     "parent",
     "status",
     "sprint",
