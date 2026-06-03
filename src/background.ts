@@ -95,16 +95,17 @@ async function validateAndRefreshTaskSchemas(): Promise<string | null> {
 
     if (taskChanged) {
       changedTaskSchemaNames.push(updatedTask.name)
+    }
+
       const index = storedTasks.findIndex((t) => t.url === task.url)
       if (index !== -1) {
         storedTasks[index] = updatedTask
-      }
     }
   }
 
+  await saveValue(StorageKey.OpenProjectTasks, storedTasks)
   if (changedTaskSchemaNames.length > 0) {
-    await saveValue(StorageKey.OpenProjectTasks, storedTasks)
-    return `Das schema für einen oder mehrere Tasks hat sich geändert (${changedTaskSchemaNames.join(", ")}).
+    return `Das Schema für einen oder mehrere Tasks hat sich geändert (${changedTaskSchemaNames.join(", ")}).
      Bitte überprüfe es in den Einstellungen und starte den Prozess erneut.`
   }
 
