@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { StartProcessing, StopProcessign as StopProcessing } from "../../background"
+  import type { StartProcessing, StopProcessing as StopProcessing } from "../../background"
   import { showInfo } from "../../infoStore"
   import type { Project } from "../../openProject/openProjectTypes"
   import { extractTextFromPdf } from "../../textExtractor"
@@ -32,23 +32,26 @@
       isProcessing = false
       const message: StopProcessing = { type: "StopProcessing" }
       const info = await chrome.runtime.sendMessage(message)
+      showInfo(info)
       return
     }
 
     isProcessing = true
-
+    let extractedText: string
     try {
-      const extractedText = await extractTextFromPdf(selectedFile)
+      extractedText = await extractTextFromPdf(selectedFile)
       showInfo(extractedText)
     } catch (error) {
       showInfo((error as Error).message)
+      return
     }
 
-    // const message: StartProcessing = {
-    //   type: "StartProcessing",
-    // }
-    // const info = await chrome.runtime.sendMessage(message)
-    // showInfo(info)
+    const message: StartProcessing = {
+      type: "StartProcessing",
+      extractedText: extractedText,
+    }
+    const info = await chrome.runtime.sendMessage(message)
+    showInfo(info)
 
     isProcessing = false
     selectedFile = null
