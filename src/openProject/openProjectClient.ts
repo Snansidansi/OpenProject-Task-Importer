@@ -137,13 +137,13 @@ class OpenProjectClient {
 
         const allowedValues: any[] = field._embedded?.allowedValues
         const values: AttributeValues[] = []
-        allowedValues?.forEach((value) => {
-          if (value._type === "CustomOption") {
-            const href = value._links?.self?.href
+        allowedValues?.forEach((entry) => {
+          if (entry._type === "CustomOption") {
+            const href = entry._links?.self?.href
 
             if (href) {
               values.push({
-                name: value.name,
+                name: entry.value,
                 value: href,
                 type: "link",
               })
