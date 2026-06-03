@@ -24,7 +24,13 @@
   })
 
   async function handleButtonClick() {
-    if (selectedFile == null) {
+    if (!selectedProject) {
+      showInfo("Bitte ein Projekt auswählen.")
+      return
+    }
+
+    if (!selectedFile) {
+      showInfo("Bitte eine Datei auswählen.")
       return
     }
 
@@ -49,6 +55,7 @@
     const message: StartProcessing = {
       type: "StartProcessing",
       extractedText: extractedText,
+      selectedProject: selectedProject,
     }
     const info = await chrome.runtime.sendMessage(message)
     showInfo(info)
