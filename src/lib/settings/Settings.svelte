@@ -112,10 +112,13 @@
         existingTask,
         referenceProject.url,
       )
+
       if (updatedTask.taskChanged) {
-        deleteTask(newTask.url)
-        tasks.push(updatedTask.task)
+        showInfo(`Task aktuallisiert: ${existingTask.name}`)
       }
+
+      deleteTask(newTask.url)
+      tasks.push(updatedTask.task)
       return
     }
     try {

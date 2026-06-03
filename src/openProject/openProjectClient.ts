@@ -1,6 +1,12 @@
 import { showInfo } from "../infoStore"
 import { getValue, StorageKey } from "../storage"
-import type { Project, Task, TaskAttributeData, TaskMetadata } from "./openProjectTypes"
+import type {
+  AttributeValues,
+  Project,
+  Task,
+  TaskAttributeData,
+  TaskMetadata,
+} from "./openProjectTypes"
 
 class OpenProjectClient {
   private readonly getBaseUrl: () => Promise<string | null> | string
@@ -128,6 +134,22 @@ class OpenProjectClient {
           llmNote: "",
           type: field.type,
         }
+
+        const allowedValues: any[] = field._embedded?.allowedValues
+        const values: AttributeValues[] = []
+        allowedValues?.forEach((value) => {
+          if (value._type === "CustomOption") {
+            const href = value._links?.self?.href
+
+            if (href) {
+              values.push(href)
+            }
+          }
+        })
+
+        if (values.length > 0) {
+          taskData[field.name].values = values
+        }
       }
     })
 
@@ -144,6 +166,7 @@ class OpenProjectClient {
    * - Fields present in the new task but not in the old one are added with default values.
    * - Fields present in both retain the old task's values.
    *
+   * @returns Boolean if the basic schema was changed. If a TaskAttibute.values field changes it will still return false!
    * @throws {Error} if the request fails
    */
   public async updateTaskDetails(
@@ -162,6 +185,7 @@ class OpenProjectClient {
 
       if (oldData && newData) {
         mergedData[key] = oldData
+        mergedData[key].values = newData.values
       } else if (newData) {
         mergedData[key] = newData
         taskChanged = true

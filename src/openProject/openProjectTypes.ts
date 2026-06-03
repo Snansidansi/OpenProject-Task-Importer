@@ -3,11 +3,18 @@ export type Project = {
   url: string
 }
 
+export type AttributeValues = {
+  name: string
+  value: string
+  type: "link" | "value"
+}
+
 export type TaskAttributeData = {
   allowedForLLM: boolean
   required: boolean
   llmNote: string
   type: string
+  values?: AttributeValues[]
 }
 
 export type Task = {
