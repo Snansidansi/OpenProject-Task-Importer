@@ -2,7 +2,6 @@
   import type { StartProcessing, StopProcessing as StopProcessing } from "../../background"
   import { showInfo } from "../../infoStore"
   import type { Project } from "../../openProject/openProjectTypes"
-  import { extractTextFromPdf } from "../../textExtractor"
   import ImportButton from "./ImportButton.svelte"
   import PdfSelector from "./pdf-selector/PdfSelector.svelte"
   import ProjectSelection from "./ProjectSelection.svelte"
@@ -22,6 +21,15 @@
       }
     }
   })
+
+  function arrayBufferToBase64(buffer: ArrayBuffer): string {
+    const bytes = new Uint8Array(buffer)
+    let binary = ""
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i])
+    }
+    return btoa(binary)
+  }
 
   async function handleButtonClick() {
     if (!selectedProject) {
@@ -43,17 +51,20 @@
     }
 
     isProcessing = true
-    let extractedText: string
+    let fileData: ArrayBuffer
     try {
-      extractedText = await extractTextFromPdf(selectedFile)
+      fileData = await selectedFile.arrayBuffer()
     } catch (error) {
       showInfo((error as Error).message)
+      isProcessing = false
       return
     }
 
+    const base64Data = arrayBufferToBase64(fileData)
+
     const message: StartProcessing = {
       type: "StartProcessing",
-      extractedText: extractedText,
+      fileData: base64Data,
       selectedProject: selectedProject,
     }
     const info = await chrome.runtime.sendMessage(message)

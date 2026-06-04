@@ -2,12 +2,13 @@ import type { Project, Task, User } from "./openProject/openProjectTypes"
 import { openProjectClient } from "./openProject/openProjectClient"
 import { getValue, saveValue, StorageKey } from "./storage"
 import { defaultSystemPrompt, defaultTypes, LlmRequest } from "./llmRequest"
+import { extractTextFromPdf } from "./textExtractor"
 
 export type BackgroundOperationMessage = StartProcessing | StopProcessing
 
 export type StartProcessing = {
   type: "StartProcessing"
-  extractedText: string
+  fileData: string // Changed to string for Base64
   selectedProject: Project
 }
 
@@ -26,7 +27,26 @@ chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, se
   }
 })
 
+function base64ToArrayBuffer(base64: string): ArrayBuffer {
+  const binaryString = atob(base64)
+  const len = binaryString.length
+  const bytes = new Uint8Array(len)
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i)
+  }
+  return bytes.buffer
+}
+
 async function startProcessing(message: StartProcessing): Promise<string> {
+  const arrayBuffer = base64ToArrayBuffer(message.fileData)
+  const file = new File([arrayBuffer], "document.pdf", { type: "application/pdf" })
+  let extractedText: string
+  try {
+    extractedText = await extractTextFromPdf(file)
+  } catch (error) {
+    return (error as Error).message
+  }
+
   const availableTasks = await refreshAndGetTaskSchemas(message.selectedProject)
   if (typeof availableTasks === "string") {
     return availableTasks
@@ -34,13 +54,18 @@ async function startProcessing(message: StartProcessing): Promise<string> {
   const availableUsers = await openProjectClient.getUsersForProject(message.selectedProject)
   const userPrompt = await getValue(StorageKey.AiPrompt)
 
-  const llmPrompt = buildLllmPrompt(message, availableTasks, availableUsers, userPrompt)
+  const llmPrompt = buildLllmPrompt(
+    { ...message, extractedText },
+    availableTasks,
+    availableUsers,
+    userPrompt,
+  )
 
   return llmPrompt
 }
 
 function buildLllmPrompt(
-  message: StartProcessing,
+  message: StartProcessing & { extractedText: string },
   availableTasks: Task[],
   availableUsers: User[],
   userPrompt: string | null,
