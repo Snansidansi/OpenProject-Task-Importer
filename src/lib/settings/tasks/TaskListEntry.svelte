@@ -15,6 +15,12 @@
   function onTaskClick() {
     expanded = !expanded
   }
+
+  let sortedEntries = $derived(
+    (Object.entries(task.data) as [string, TaskAttributeData][]).toSorted((a, b) =>
+      a[1].name.localeCompare(b[1].name),
+    ),
+  )
 </script>
 
 <div
@@ -39,11 +45,8 @@
   </button>
   <div class="expandable-content">
     <div class="overflow-hidden">
-      {#each Object.entries(task.data).sort((a, b) => a[0].localeCompare(b[0])) as [key, value]}
-        <TaskAttributeEntry
-          name={(value as AttributeValues).name}
-          data={value as TaskAttributeData}
-        />
+      {#each sortedEntries as [_, value]}
+        <TaskAttributeEntry data={value as TaskAttributeData} />
       {/each}
       <div class="px-stack-md pb-stack-md border-outline-variant/20 pt-stack-sm space-y-2 border-t">
         <button
