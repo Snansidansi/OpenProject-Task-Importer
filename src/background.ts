@@ -3,6 +3,7 @@ import { openProjectClient } from "./openProject/openProjectClient"
 import { getValue, saveValue, StorageKey } from "./storage"
 import { defaultSystemPrompt, defaultTypes, LlmRequest } from "./llmRequest"
 import { extractTextFromPdf } from "./textExtractor"
+import { OpenRouter } from "@openrouter/sdk"
 
 export type BackgroundOperationMessage = StartProcessing | StopProcessing
 
@@ -38,6 +39,16 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
 }
 
 async function startProcessing(message: StartProcessing): Promise<string> {
+  const openRouterKey = await getValue(StorageKey.OpenRouterApiKey)
+  if (!openRouterKey) {
+    return "Bitte einen API Schlüssel für OpenRouter festlegen."
+  }
+
+  const aiModel = await getValue(StorageKey.AiModel)
+  if (!aiModel || aiModel.trim() === "") {
+    return "Bitte ein Ki-Modell festlegen"
+  }
+
   const arrayBuffer = base64ToArrayBuffer(message.fileData)
   const file = new File([arrayBuffer], "document.pdf", { type: "application/pdf" })
   let extractedText: string
@@ -61,7 +72,17 @@ async function startProcessing(message: StartProcessing): Promise<string> {
     userPrompt,
   )
 
-  return llmPrompt
+  const client = new OpenRouter({
+    apiKey: openRouterKey,
+  })
+  const llmReponse = await client.chat.send({
+    chatRequest: {
+      model: aiModel.trim(),
+      messages: [{ role: "system", content: llmPrompt }],
+    },
+  })
+  const responseData = llmReponse.choices[0].message.content
+  return responseData
 }
 
 function buildLllmPrompt(
