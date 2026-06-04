@@ -17,16 +17,22 @@ export type StopProcessing = {
   type: "StopProcessing"
 }
 
-chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, sendResponse) => {
-  switch (message.type) {
-    case "StartProcessing":
-      return startProcessing(message)
+chrome.runtime.onMessage.addListener(
+  async (message: BackgroundOperationMessage, _, sendResponse) => {
+    switch (message.type) {
+      case "StartProcessing":
+        try {
+          return await startProcessing(message)
+        } catch (error) {
+          return "Unexpected Error: " + (error as Error).message
+        }
 
-    case "StopProcessing":
-      sendResponse("Stopped")
-      break
-  }
-})
+      case "StopProcessing":
+        sendResponse("Stopped")
+        break
+    }
+  },
+)
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
   const binaryString = atob(base64)
@@ -71,19 +77,24 @@ async function startProcessing(message: StartProcessing): Promise<string> {
     availableUsers,
     userPrompt,
   )
-  return llmPrompt
 
-  // const client = new OpenRouter({
-  //   apiKey: openRouterKey,
-  // })
-  // const llmReponse = await client.chat.send({
-  //   chatRequest: {
-  //     model: aiModel.trim(),
-  //     messages: [{ role: "system", content: llmPrompt }],
-  //   },
-  // })
-  // const responseData = llmReponse.choices[0].message.content
-  // return responseData
+  const client = new OpenRouter({
+    apiKey: openRouterKey,
+  })
+  const llmReponse = await client.chat.send({
+    chatRequest: {
+      model: aiModel.trim(),
+      messages: [{ role: "system", content: llmPrompt }],
+    },
+  })
+  const responseData = llmReponse.choices[0].message.content
+
+  const info = await openProjectClient.createTaskFromLlmResponse(
+    responseData,
+    availableTasks,
+    message.selectedProject,
+  )
+  return "Finished"
 }
 
 function buildLllmPrompt(

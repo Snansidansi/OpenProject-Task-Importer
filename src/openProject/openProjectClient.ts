@@ -1,4 +1,3 @@
-import { showInfo } from "../infoStore"
 import { getValue, StorageKey } from "../storage"
 import type {
   AttributeValues,
@@ -20,7 +19,6 @@ class OpenProjectClient {
     "lockVersion",
     "createdAt",
     "updatedAt",
-    "subject",
     "scheduleManually",
     "ignoreNonWorkingDays",
     "remainingTime",
@@ -210,6 +208,100 @@ class OpenProjectClient {
         data: mergedData,
       },
       taskChanged: taskChanged,
+    }
+  }
+
+  /**
+   * Creates tasks in OpenProject based on the LLM response.
+   * The LLM response should be a JSON array of task objects.
+   * Each task object should have a 'taskType' property and optionally 'children' for nested tasks.
+   *
+   * @throws {Error} if the LLM response is invalid or if task creation fails
+   */
+  public async createTaskFromLlmResponse(
+    llmResponse: string,
+    availableTasks: Task[],
+    project: Project,
+  ): Promise<void> {
+    let parsedResponse: any[]
+    try {
+      parsedResponse = JSON.parse(llmResponse)
+    } catch (error) {
+      throw new Error(`Ungültiges JSON in der LLM-Antwort: ${(error as Error).message}`)
+    }
+
+    if (!Array.isArray(parsedResponse)) {
+      throw new Error("Die LLM-Antwort muss ein JSON-Array sein.")
+    }
+
+    for (const taskData of parsedResponse) {
+      await this.processSingleTask(taskData, availableTasks, project)
+    }
+  }
+
+  private async processSingleTask(
+    taskData: any,
+    availableTasks: Task[],
+    project: Project,
+    parentTaskId?: number,
+  ): Promise<void> {
+    // Find matching task type
+    const taskType = taskData.taskType
+    if (!taskType) {
+      console.warn("Task data missing 'taskType':", taskData)
+      return
+    }
+
+    const matchedTask = availableTasks.find((t) => t.name === taskType)
+    if (!matchedTask) {
+      console.warn(`No matching task type found for: ${taskType}`)
+      return
+    }
+
+    // Build payload
+    const payload: any = {
+      _links: {
+        project: { href: project.url },
+        type: { href: matchedTask.url },
+      },
+    }
+
+    for (const [key, value] of Object.entries(taskData)) {
+      if (key === "taskType" || key === "children") continue
+
+      const attributeData = matchedTask.data[key]
+      if (!attributeData) continue
+
+      if (attributeData.location === "_links") {
+        payload._links[key] = { href: String(value) }
+      } else {
+        payload[key] = value
+      }
+    }
+
+    // Add parent link if applicable
+    if (parentTaskId) {
+      payload._links.parent = { href: `/api/v3/work_packages/${parentTaskId}` }
+    }
+
+    try {
+      const response: Response = await this.request("work_packages", "POST", payload)
+
+      if (response.status === 201) {
+        const responseData = await response.json()
+        const currentTaskId = responseData.id
+
+        // Handle nested children if they exist
+        if (Array.isArray(taskData.children)) {
+          for (const child of taskData.children) {
+            await this.processSingleTask(child, availableTasks, project, currentTaskId)
+          }
+        }
+      } else {
+        throw new Error(`Fehler beim Erstellen des Tasks: ${response.statusText}`)
+      }
+    } catch (error) {
+      throw new Error(`Fehler beim Erstellen des Tasks: ${(error as Error).message}`)
     }
   }
 

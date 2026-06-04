@@ -152,5 +152,7 @@ export const defaultSystemPrompt =
 
 export const defaultTypes: Record<string, string> = {
   Date: "Date in the format: YYYY-MM-DD",
-  Duration: "ISO 8601 duration format",
+  Duration:
+    'ISO 8601 duration format (if a task schema contains the field "duration" of type duration it needs the duration in days (not hours)',
+  Formattable: "Ein normaler String",
 }
