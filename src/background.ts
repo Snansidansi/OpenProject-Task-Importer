@@ -71,18 +71,19 @@ async function startProcessing(message: StartProcessing): Promise<string> {
     availableUsers,
     userPrompt,
   )
+  return llmPrompt
 
-  const client = new OpenRouter({
-    apiKey: openRouterKey,
-  })
-  const llmReponse = await client.chat.send({
-    chatRequest: {
-      model: aiModel.trim(),
-      messages: [{ role: "system", content: llmPrompt }],
-    },
-  })
-  const responseData = llmReponse.choices[0].message.content
-  return responseData
+  // const client = new OpenRouter({
+  //   apiKey: openRouterKey,
+  // })
+  // const llmReponse = await client.chat.send({
+  //   chatRequest: {
+  //     model: aiModel.trim(),
+  //     messages: [{ role: "system", content: llmPrompt }],
+  //   },
+  // })
+  // const responseData = llmReponse.choices[0].message.content
+  // return responseData
 }
 
 function buildLllmPrompt(

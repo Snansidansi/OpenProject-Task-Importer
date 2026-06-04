@@ -118,21 +118,23 @@ class OpenProjectClient {
 
     const taskData: Record<string, TaskAttributeData> = {}
 
-    Object.keys(schema).forEach((key) => {
-      const field = schema[key]
+    Object.keys(schema).forEach((attributeName) => {
+      const field = schema[attributeName]
 
       if (
         field &&
         field.writable === true &&
-        !this.workPackageTypeBlacklist.includes(key) &&
+        !this.workPackageTypeBlacklist.includes(attributeName) &&
         !this.workPackageTypeBlackList.includes(field.type)
       ) {
         const isRequired = field.required ?? false
 
-        taskData[field.name] = {
+        taskData[attributeName] = {
+          name: field.name,
           required: isRequired,
           allowedForLLM: isRequired,
           type: field.type,
+          location: field.location,
         }
 
         const allowedValues: any[] = field._embedded?.allowedValues
@@ -152,7 +154,7 @@ class OpenProjectClient {
         })
 
         if (values.length > 0) {
-          taskData[field.name].values = values
+          taskData[attributeName].values = values
         }
       }
     })

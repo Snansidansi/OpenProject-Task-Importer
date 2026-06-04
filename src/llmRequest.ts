@@ -107,6 +107,8 @@ export class LlmRequest {
           }
 
           delete (field as any).allowedForLLM
+          delete (field as any).name
+          delete (field as any).location
 
           if (field.values && Array.isArray(field.values)) {
             field.values.forEach((val: any) => {

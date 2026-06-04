@@ -10,11 +10,13 @@ export type AttributeValues = {
 }
 
 export type TaskAttributeData = {
+  name: string
   allowedForLLM: boolean
   required: boolean
   llmNote?: string
   type: string
   values?: AttributeValues[]
+  location?: string //"e.g. _links"
 }
 
 export type Task = {

@@ -1,5 +1,9 @@
 <script lang="ts">
-  import type { Task, TaskAttributeData } from "../../../openProject/openProjectTypes"
+  import type {
+    AttributeValues,
+    Task,
+    TaskAttributeData,
+  } from "../../../openProject/openProjectTypes"
   import TaskAttributeEntry from "./TaskAttributeEntry.svelte"
 
   let { task, onDelete } = $props<{
@@ -36,7 +40,10 @@
   <div class="expandable-content">
     <div class="overflow-hidden">
       {#each Object.entries(task.data).sort((a, b) => a[0].localeCompare(b[0])) as [key, value]}
-        <TaskAttributeEntry name={key} data={value as TaskAttributeData} />
+        <TaskAttributeEntry
+          name={(value as AttributeValues).name}
+          data={value as TaskAttributeData}
+        />
       {/each}
       <div class="px-stack-md pb-stack-md border-outline-variant/20 pt-stack-sm space-y-2 border-t">
         <button
