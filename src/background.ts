@@ -5,6 +5,7 @@ import { defaultSystemPrompt, defaultTypes, LlmRequest } from "./llmRequest"
 import { extractTextFromPdf } from "./textExtractor"
 import { OpenRouter } from "@openrouter/sdk"
 import type { ChatResult } from "@openrouter/sdk/models"
+import { t } from "./i18n"
 
 export type BackgroundOperationMessage = StartProcessing | StopProcessing
 
@@ -36,9 +37,9 @@ chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, se
         })
         .catch((error) => {
           if ((error as Error).name !== "AbortError") {
-            sendResponse("Unexpected Error: " + (error as Error).message)
+            sendResponse(t("unexpectedError") + (error as Error).message)
           } else {
-            sendResponse("Import abgebrochen")
+            sendResponse(t("abortError"))
           }
         })
         .finally(() => {
@@ -66,28 +67,28 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
 async function startProcessing(message: StartProcessing, signal: AbortSignal): Promise<string> {
   const openRouterKey = await getValue(StorageKey.OpenRouterApiKey)
   if (!openRouterKey) {
-    return "Bitte einen API Schlüssel für OpenRouter festlegen."
+    return t("apiKeyRequired")
   }
 
   const aiModel = await getValue(StorageKey.AiModel)
   if (!aiModel || aiModel.trim() === "") {
-    return "Bitte ein Ki-Modell festlegen"
+    return t("aiModelRequired")
   }
 
-  if (signal.aborted) throw new DOMException("Aborted", "AbortError")
+  if (signal.aborted) throw new DOMException(t("abortError"), "AbortError")
 
   const arrayBuffer = base64ToArrayBuffer(message.fileData)
   const file = new File([arrayBuffer], "document.pdf", { type: "application/pdf" })
   let extractedText: string
   try {
-    if (signal.aborted) throw new DOMException("Aborted", "AbortError")
+    if (signal.aborted) throw new DOMException(t("abortError"), "AbortError")
     extractedText = await extractTextFromPdf(file)
   } catch (error) {
     if ((error as Error).name === "AbortError") throw error
     return (error as Error).message
   }
 
-  if (signal.aborted) throw new DOMException("Aborted", "AbortError")
+  if (signal.aborted) throw new DOMException(t("abortError"), "AbortError")
 
   const availableTasks = await refreshAndGetTaskSchemas(message.selectedProject)
   if (typeof availableTasks === "string") {
@@ -96,7 +97,7 @@ async function startProcessing(message: StartProcessing, signal: AbortSignal): P
   const availableUsers = await openProjectClient.getUsersForProject(message.selectedProject)
   const userPrompt = await getValue(StorageKey.AiPrompt)
 
-  if (signal.aborted) throw new DOMException("Aborted", "AbortError")
+  if (signal.aborted) throw new DOMException(t("abortError"), "AbortError")
 
   const llmPrompt = buildLllmPrompt(
     { ...message, extractedText },
@@ -122,12 +123,12 @@ async function startProcessing(message: StartProcessing, signal: AbortSignal): P
     )
   } catch (error) {
     if ((error as Error).name === "AbortError" || signal.aborted) {
-      throw new DOMException("Aborted", "AbortError")
+      throw new DOMException(t("abortError"), "AbortError")
     }
     return "OpenRouter Error: " + (error as Error).message
   }
 
-  if (signal.aborted) throw new DOMException("Aborted", "AbortError")
+  if (signal.aborted) throw new DOMException(t("abortError"), "AbortError")
 
   const responseData = llmReponse.choices[0].message.content
   const info = await openProjectClient.createTaskFromLlmResponse(
@@ -135,7 +136,7 @@ async function startProcessing(message: StartProcessing, signal: AbortSignal): P
     availableTasks,
     message.selectedProject,
   )
-  return "Finished"
+  return t("finished")
 }
 
 function buildLllmPrompt(
@@ -177,12 +178,12 @@ async function refreshAndGetTaskSchemas(project: Project): Promise<string | Task
 async function validateAndRefreshTaskSchemas(): Promise<string | null> {
   const referenceProject = await getValue<Project>(StorageKey.ReferenceProject)
   if (!referenceProject) {
-    return "Bitte wähle zuerst ein Referenzprojekt aus."
+    return t("referenceProjectNotSelected")
   }
 
   const storedTasks = await getValue<Task[]>(StorageKey.OpenProjectTasks)
   if (!storedTasks || storedTasks.length === 0) {
-    return "Bitte erstelle erst mindestens einen Task."
+    return t("noTasksCreated")
   }
 
   let changedTaskSchemaNames: string[] = []
@@ -204,8 +205,7 @@ async function validateAndRefreshTaskSchemas(): Promise<string | null> {
 
   await saveValue(StorageKey.OpenProjectTasks, storedTasks)
   if (changedTaskSchemaNames.length > 0) {
-    return `Das Schema für einen oder mehrere Tasks hat sich geändert (${changedTaskSchemaNames.join(", ")}).
-      Bitte überprüfe es in den Einstellungen und starte den Prozess erneut.`
+    return `${t("schemaChanged")}${changedTaskSchemaNames.join(", ")}${t("schemaChangedEnd")}`
   }
 
   return null

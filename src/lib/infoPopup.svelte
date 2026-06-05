@@ -1,5 +1,6 @@
 <script lang="ts">
   import { infoMessage, clearInfo } from "../infoStore"
+  import { t } from "../i18n"
 </script>
 
 {#if $infoMessage}
@@ -10,7 +11,7 @@
       <button
         onclick={clearInfo}
         class="absolute top-3 right-3 z-10 text-gray-400 transition-colors hover:text-gray-600"
-        aria-label="Schließen"
+        aria-label={t("closePopup")}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -29,7 +30,7 @@
       </button>
 
       <div class="flex min-h-0 flex-1 flex-col items-center text-center">
-        <h3 class="mb-2 text-lg font-semibold text-gray-900">Information</h3>
+        <h3 class="mb-2 text-lg font-semibold text-gray-900">{t("informationTitle")}</h3>
       </div>
 
       <div class="w-full overflow-y-auto px-2">

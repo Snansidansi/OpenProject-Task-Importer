@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from "../../../i18n"
   import type { TaskAttributeData } from "../../../openProject/openProjectTypes"
   import TextInput from "../TextInput.svelte"
 
@@ -24,13 +25,13 @@
         <span class="text-xs text-gray-400 italic">({data.type})</span>
       </div>
       {#if data.required}
-        <span class="ml-auto text-sm font-bold text-red-500">Pflichtfeld</span>
+        <span class="ml-auto text-sm font-bold text-red-500">{t("requiredField")}</span>
       {/if}
     </div>
     <TextInput
       id={`task-attr-${data.name}-note`}
       label=""
-      placeholder="Notiz für LLM"
+      placeholder={t("llmNotePlaceholder")}
       icon="info"
       bind:value={data.llmNote}
     />

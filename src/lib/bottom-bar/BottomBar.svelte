@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from "../../i18n"
   import NavButton from "./NavButton.svelte"
 
   let { showImport = $bindable(true) } = $props<{
@@ -11,14 +12,14 @@
 >
   <NavButton
     icon="upload_file"
-    text="Import"
+    text={t("importButton")}
     active={showImport}
     onclick={() => (showImport = true)}
   />
 
   <NavButton
     icon="tune"
-    text="Settings"
+    text={t("settingsButton")}
     active={!showImport}
     onclick={() => (showImport = false)}
   />

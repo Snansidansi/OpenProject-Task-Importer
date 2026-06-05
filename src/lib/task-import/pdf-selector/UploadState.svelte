@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { t } from "../../../i18n"
+
   let { selectedFile } = $props<{
     selectedFile: File | null
   }>()
@@ -16,12 +18,12 @@
   </div>
 
   <h3 class="font-headline-md text-headline-md text-on-surface">
-    {selectedFile ? selectedFile.name : "Ziehe deine PDF hierher oder klicke um sie auszuwählen."}
+    {selectedFile ? selectedFile.name : t("uploadPlaceholder")}
   </h3>
 
   <p class="font-body-md text-body-md text-on-surface-variant max-w-70">
     {#if selectedFile}
-      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB - bereit zum Import
+      {(selectedFile.size / (1024 * 1024)).toFixed(2)} {t("fileReady")}
     {/if}
   </p>
 </div>

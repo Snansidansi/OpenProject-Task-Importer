@@ -7,6 +7,7 @@ import type {
   TaskMetadata,
   User,
 } from "./openProjectTypes"
+import { t } from "../i18n"
 
 class OpenProjectClient {
   private readonly getBaseUrl: () => Promise<string | null> | string
@@ -227,11 +228,11 @@ class OpenProjectClient {
     try {
       parsedResponse = JSON.parse(llmResponse)
     } catch (error) {
-      throw new Error(`Ungültiges JSON in der LLM-Antwort: ${(error as Error).message}`)
+      throw new Error(`${t("invalidJson")}${(error as Error).message}`)
     }
 
     if (!Array.isArray(parsedResponse)) {
-      throw new Error("Die LLM-Antwort muss ein JSON-Array sein.")
+      throw new Error(t("mustBeJsonArray"))
     }
 
     for (const taskData of parsedResponse) {
@@ -248,13 +249,13 @@ class OpenProjectClient {
     // Find matching task type
     const taskType = taskData.taskType
     if (!taskType) {
-      console.warn("Task data missing 'taskType':", taskData)
+      console.warn(`${t("missingTaskType")}`, taskData)
       return
     }
 
     const matchedTask = availableTasks.find((t) => t.name === taskType)
     if (!matchedTask) {
-      console.warn(`No matching task type found for: ${taskType}`)
+      console.warn(`${t("noMatchingTaskType")}${taskType}`)
       return
     }
 
@@ -302,10 +303,10 @@ class OpenProjectClient {
           }
         }
       } else {
-        console.warn(`Fehler beim Erstellen des Tasks: ${response.statusText}`)
+        console.warn(`${t("createTaskError")}${response.statusText}`)
       }
     } catch (error) {
-      console.warn(`Fehler beim Erstellen des Tasks: ${(error as Error).message}`)
+      console.warn(`${t("createTaskError")}${(error as Error).message}`)
     }
   }
 

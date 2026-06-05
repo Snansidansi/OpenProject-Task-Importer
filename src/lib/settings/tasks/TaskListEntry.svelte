@@ -1,9 +1,6 @@
 <script lang="ts">
-  import type {
-    AttributeValues,
-    Task,
-    TaskAttributeData,
-  } from "../../../openProject/openProjectTypes"
+  import { t } from "../../../i18n"
+  import type { Task, TaskAttributeData } from "../../../openProject/openProjectTypes"
   import TaskAttributeEntry from "./TaskAttributeEntry.svelte"
 
   let { task, onDelete } = $props<{
@@ -53,7 +50,7 @@
           class="gap-stack-md flex w-full items-center justify-center rounded-lg bg-red-500 p-3 hover:bg-red-400"
           onclick={onDelete}
         >
-          <span class="text-md text-white">Task Löschen</span>
+          <span class="text-md text-white">{t("taskDeleteButton")}</span>
         </button>
       </div>
     </div>

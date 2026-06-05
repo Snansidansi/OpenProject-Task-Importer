@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from "../../i18n"
   import TextInput from "./TextInput.svelte"
   import PasswordInput from "./PasswordInput.svelte"
   import TextArea from "./TextArea.svelte"
@@ -114,7 +115,7 @@
       )
 
       if (updatedTask.taskChanged) {
-        showInfo(`Task aktuallisiert: ${existingTask.name}`)
+        showInfo(`${t("taskUpdated")}${existingTask.name}`)
       }
 
       deleteTask(newTask.url)
@@ -139,7 +140,7 @@
     class="ambient-card flex w-full flex-col gap-4 rounded-3xl bg-white p-6 shadow-[0px_20px_24px_-4px_rgba(0,0,0,0.04)]"
   >
     <TextInput
-      label="OpenProject URL"
+      label={t("openProjectUrlLabel")}
       id="op_url"
       placeholder="https://..."
       icon="link"
@@ -147,7 +148,7 @@
     />
 
     <PasswordInput
-      label="OpenProject Token"
+      label={t("openProjectTokenLabel")}
       id="op_token"
       placeholder="Your API access key"
       icon="key"
@@ -155,16 +156,16 @@
     />
 
     <PasswordInput
-      label="OpenRouter API Key"
+      label={t("openRouterApiKeyLabel")}
       id="or_key"
       placeholder="sk-or-v1-..."
       icon="key"
       bind:value={openRouterApiKey}
     />
 
-    <TextInput label="AI Model" id="ai_model" icon="smart_toy" bind:value={aiModel} />
+    <TextInput label={t("aiModelLabel")} id="ai_model" icon="smart_toy" bind:value={aiModel} />
 
-    <Accordion title="Open Project Tasks" id="tasks">
+    <Accordion title={t("openProjectTasksSection")} id="tasks">
       <TaskSettings
         availableTasks={availableTasks}
         projects={projects}
@@ -175,9 +176,9 @@
       />
     </Accordion>
 
-    <Accordion title="Advanced Prompt Settings" id="prompt">
+    <Accordion title={t("advancedPromptSettingsSection")} id="prompt">
       <TextArea
-        label="AI Prompt"
+        label={t("aiPromptLabel")}
         id="ki_prompt"
         placeholder="Enter system instructions here..."
         bind:value={aiPrompt}

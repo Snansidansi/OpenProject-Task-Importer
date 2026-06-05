@@ -1,9 +1,10 @@
 <script lang="ts">
+  import { t } from "../../i18n"
   import type { Project } from "../../openProject/openProjectTypes"
 
   let {
     projects,
-    label = "Project:",
+    label = t("projectLabel"),
     disabled = false,
     selectedProject = $bindable(),
   } = $props<{
@@ -34,9 +35,9 @@
       disabled={disabled || projects.length === 0}
     >
       {#if projects.length === 0}
-        <option value="" disabled selected>Loading projects...</option>
+        <option value="" disabled selected>{t("loadingProjects")}</option>
       {:else}
-        <option value="" disabled={selectedProject !== null}>Bitte wählen...</option>
+        <option value="" disabled={selectedProject !== null}>{t("projectPlaceholder")}</option>
         {#each projects as project}
           <option value={project} selected={selectedProject?.id === project.id}
             >{project.name}</option

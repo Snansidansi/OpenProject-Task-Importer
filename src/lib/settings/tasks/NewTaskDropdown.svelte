@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from "../../../i18n"
   import type { Task, TaskMetadata } from "../../../openProject/openProjectTypes"
 
   let {
@@ -27,7 +28,7 @@
     onchange={handleChange}
     disabled={disabled}
   >
-    <option disabled hidden selected value={null}>Neuer Task</option>
+    <option disabled hidden selected value={null}>{t("newTaskPlaceholder")}</option>
     {#each availableTasks as task}
       <option value={task}>{task.name}</option>
     {/each}

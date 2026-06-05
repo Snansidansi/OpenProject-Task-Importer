@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { t } from "../../i18n"
+
   let { isProcessing, onclick } = $props<{
     isProcessing: boolean
     onclick: (event: MouseEvent) => void
@@ -17,9 +19,9 @@
 >
   {#if !isProcessing}
     <span class="material-symbols-outlined">auto_awesome</span>
-    Aufgaben Importieren
+    {t("importButtonStart")}
   {:else}
     <span class="material-symbols-outlined">close</span>
-    Import Abbrechen
+    {t("importButtonStop")}
   {/if}
 </button>

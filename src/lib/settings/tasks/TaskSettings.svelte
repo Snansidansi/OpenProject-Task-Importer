@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from "../../../i18n"
   import type { Task, TaskMetadata, Project } from "../../../openProject/openProjectTypes"
   import NewTaskDropdown from "./NewTaskDropdown.svelte"
   import TaskListEntry from "./TaskListEntry.svelte"
@@ -27,13 +28,13 @@
   <ProjectSelection
     projects={projects}
     bind:selectedProject={referenceProject}
-    label="Referenzprojekt"
+    label={t("referenceProjectLabel")}
     disabled={disabled}
   />
   {#if !referenceProject}
     <div class="text-error mt-1 flex items-center gap-1 text-sm">
       <span class="material-symbols-outlined text-sm text-red-600">info</span>
-      <span class="text-red-600">Referenzprojekt muss ausgewählt werden</span>
+      <span class="text-red-600">{t("referenceProjectRequired")}</span>
     </div>
   {/if}
 </div>

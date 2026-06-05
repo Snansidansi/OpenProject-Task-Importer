@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { t } from "../i18n"
+
   let { showImport } = $props<{
     showImport: Boolean
   }>()
@@ -10,9 +12,9 @@
   >
     <h1 class="font-headline-md text-headline-md text-primary font-bold">
       {#if showImport}
-        Open Project Task Importer
+        {t("importPageTitle")}
       {:else}
-        Einstellungen
+        {t("settingsPageTitle")}
       {/if}
     </h1>
   </div>

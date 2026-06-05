@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from "../../../i18n"
   import LoadingState from "./LoadingState.svelte"
   import UploadState from "./UploadState.svelte"
 
@@ -20,7 +21,7 @@
     if (file && file.type === "application/pdf") {
       selectedFile = file
     } else {
-      alert("Bitte laden Sie eine PDF-Datei hoch.")
+      alert(t("selectFileError"))
     }
   }
 

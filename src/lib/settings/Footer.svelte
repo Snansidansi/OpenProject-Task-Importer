@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from "../../i18n"
 </script>
 
 <div class="mt-stack-sm flex flex-col items-center gap-2 text-center">
@@ -10,10 +11,10 @@
       rel="noopener"
       target="_blank"
     >
-      Addon Github Link
+      {t("githubLink")}
     </a>
   </div>
   <p class="text-label-sm text-on-surface-variant opacity-70">
-    Dies ist kein offizielles Plugin von OpenProject.
+    {t("notOfficialPlugin")}
   </p>
 </div>

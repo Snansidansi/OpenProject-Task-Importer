@@ -3,6 +3,7 @@
   "description": "An extension to import Tasks from a PDF file into OpenProject using a OpenRouter LLM.",
   "version": "0.0.1",
   "manifest_version": 3,
+  "default_locale": "de",
   "action": {
     "default_popup": "index.html"
   },

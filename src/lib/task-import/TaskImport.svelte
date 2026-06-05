@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { onMount } from "svelte"
   import type { StartProcessing, StopProcessing } from "../../background"
   import { showInfo } from "../../infoStore"
   import type { Project } from "../../openProject/openProjectTypes"
   import ImportButton from "./ImportButton.svelte"
   import PdfSelector from "./pdf-selector/PdfSelector.svelte"
   import ProjectSelection from "./ProjectSelection.svelte"
+  import { t } from "../../i18n"
 
   let { projects } = $props<{ projects: Project[] }>()
 
@@ -34,12 +34,12 @@
 
   async function handleButtonClick() {
     if (!selectedProject) {
-      showInfo("Bitte ein Projekt auswählen.")
+      showInfo(t("selectProjectError"))
       return
     }
 
     if (!selectedFile) {
-      showInfo("Bitte eine Datei auswählen.")
+      showInfo(t("selectFileError2"))
       return
     }
 
@@ -80,7 +80,7 @@
   <!-- Welcome / Context -->
   <div class="mb-stack-md w-full text-center">
     <p class="font-body-md text-body-md text-on-surface-variant">
-      Wähle ein Projekt aus und lade dein Dokument hoch, um Aufgaben automatisch zu extrahieren.
+      {t("importSubtitle")}
     </p>
   </div>
 
@@ -89,7 +89,7 @@
       projects={projects}
       disabled={isProcessing}
       bind:selectedProject={selectedProject}
-      label="Projekt"
+      label={t("projectLabel")}
     />
   </div>
   <PdfSelector isProcessing={isProcessing} bind:selectedFile={selectedFile} />
