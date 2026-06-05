@@ -1,5 +1,6 @@
 <script lang="ts">
-  import type { StartProcessing, StopProcessing as StopProcessing } from "../../background"
+  import { onMount } from "svelte"
+  import type { StartProcessing, StopProcessing } from "../../background"
   import { showInfo } from "../../infoStore"
   import type { Project } from "../../openProject/openProjectTypes"
   import ImportButton from "./ImportButton.svelte"
@@ -43,10 +44,9 @@
     }
 
     if (isProcessing) {
-      isProcessing = false
       const message: StopProcessing = { type: "StopProcessing" }
-      const info = await chrome.runtime.sendMessage(message)
-      showInfo(info)
+      chrome.runtime.sendMessage(message)
+      isProcessing = false
       return
     }
 
@@ -59,16 +59,17 @@
       isProcessing = false
       return
     }
-
     const base64Data = arrayBufferToBase64(fileData)
 
-    const message: StartProcessing = {
+    const startMessage: StartProcessing = {
       type: "StartProcessing",
       fileData: base64Data,
       selectedProject: selectedProject,
     }
-    const info = await chrome.runtime.sendMessage(message)
-    showInfo(info)
+    const info = await chrome.runtime.sendMessage(startMessage)
+    if (info !== "") {
+      showInfo(info)
+    }
 
     isProcessing = false
     selectedFile = null

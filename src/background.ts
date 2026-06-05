@@ -4,12 +4,13 @@ import { getValue, saveValue, StorageKey } from "./storage"
 import { defaultSystemPrompt, defaultTypes, LlmRequest } from "./llmRequest"
 import { extractTextFromPdf } from "./textExtractor"
 import { OpenRouter } from "@openrouter/sdk"
+import type { ChatResult } from "@openrouter/sdk/models"
 
 export type BackgroundOperationMessage = StartProcessing | StopProcessing
 
 export type StartProcessing = {
   type: "StartProcessing"
-  fileData: string // Changed to string for Base64
+  fileData: string
   selectedProject: Project
 }
 
@@ -17,22 +18,40 @@ export type StopProcessing = {
   type: "StopProcessing"
 }
 
-chrome.runtime.onMessage.addListener(
-  async (message: BackgroundOperationMessage, _, sendResponse) => {
-    switch (message.type) {
-      case "StartProcessing":
-        try {
-          return await startProcessing(message)
-        } catch (error) {
-          return "Unexpected Error: " + (error as Error).message
-        }
+let abortController: AbortController | null = null
 
-      case "StopProcessing":
-        sendResponse("Stopped")
-        break
-    }
-  },
-)
+chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, sendResponse) => {
+  switch (message.type) {
+    case "StartProcessing":
+      if (abortController) {
+        abortController.abort()
+      }
+
+      abortController = new AbortController()
+      const signal = abortController.signal
+
+      startProcessing(message, signal)
+        .then((result) => {
+          sendResponse(result)
+        })
+        .catch((error) => {
+          if ((error as Error).name !== "AbortError") {
+            sendResponse("Unexpected Error: " + (error as Error).message)
+          } else {
+            sendResponse("Import abgebrochen")
+          }
+        })
+        .finally(() => {
+          if (abortController?.signal === signal) {
+            abortController = null
+          }
+        })
+
+      return true
+    case "StopProcessing":
+      abortController?.abort()
+  }
+})
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
   const binaryString = atob(base64)
@@ -44,7 +63,7 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
   return bytes.buffer
 }
 
-async function startProcessing(message: StartProcessing): Promise<string> {
+async function startProcessing(message: StartProcessing, signal: AbortSignal): Promise<string> {
   const openRouterKey = await getValue(StorageKey.OpenRouterApiKey)
   if (!openRouterKey) {
     return "Bitte einen API Schlüssel für OpenRouter festlegen."
@@ -55,14 +74,20 @@ async function startProcessing(message: StartProcessing): Promise<string> {
     return "Bitte ein Ki-Modell festlegen"
   }
 
+  if (signal.aborted) throw new DOMException("Aborted", "AbortError")
+
   const arrayBuffer = base64ToArrayBuffer(message.fileData)
   const file = new File([arrayBuffer], "document.pdf", { type: "application/pdf" })
   let extractedText: string
   try {
+    if (signal.aborted) throw new DOMException("Aborted", "AbortError")
     extractedText = await extractTextFromPdf(file)
   } catch (error) {
+    if ((error as Error).name === "AbortError") throw error
     return (error as Error).message
   }
+
+  if (signal.aborted) throw new DOMException("Aborted", "AbortError")
 
   const availableTasks = await refreshAndGetTaskSchemas(message.selectedProject)
   if (typeof availableTasks === "string") {
@@ -70,6 +95,8 @@ async function startProcessing(message: StartProcessing): Promise<string> {
   }
   const availableUsers = await openProjectClient.getUsersForProject(message.selectedProject)
   const userPrompt = await getValue(StorageKey.AiPrompt)
+
+  if (signal.aborted) throw new DOMException("Aborted", "AbortError")
 
   const llmPrompt = buildLllmPrompt(
     { ...message, extractedText },
@@ -81,14 +108,28 @@ async function startProcessing(message: StartProcessing): Promise<string> {
   const client = new OpenRouter({
     apiKey: openRouterKey,
   })
-  const llmReponse = await client.chat.send({
-    chatRequest: {
-      model: aiModel.trim(),
-      messages: [{ role: "system", content: llmPrompt }],
-    },
-  })
-  const responseData = llmReponse.choices[0].message.content
 
+  let llmReponse: ChatResult
+  try {
+    llmReponse = await client.chat.send(
+      {
+        chatRequest: {
+          model: aiModel.trim(),
+          messages: [{ role: "system", content: llmPrompt }],
+        },
+      },
+      { fetchOptions: { signal } },
+    )
+  } catch (error) {
+    if ((error as Error).name === "AbortError" || signal.aborted) {
+      throw new DOMException("Aborted", "AbortError")
+    }
+    return "OpenRouter Error: " + (error as Error).message
+  }
+
+  if (signal.aborted) throw new DOMException("Aborted", "AbortError")
+
+  const responseData = llmReponse.choices[0].message.content
   const info = await openProjectClient.createTaskFromLlmResponse(
     responseData,
     availableTasks,
@@ -164,7 +205,7 @@ async function validateAndRefreshTaskSchemas(): Promise<string | null> {
   await saveValue(StorageKey.OpenProjectTasks, storedTasks)
   if (changedTaskSchemaNames.length > 0) {
     return `Das Schema für einen oder mehrere Tasks hat sich geändert (${changedTaskSchemaNames.join(", ")}).
-     Bitte überprüfe es in den Einstellungen und starte den Prozess erneut.`
+      Bitte überprüfe es in den Einstellungen und starte den Prozess erneut.`
   }
 
   return null
