@@ -271,6 +271,10 @@ class OpenProjectClient {
 
       const attributeData = matchedTask.data[key]
       if (!attributeData) continue
+      if (key === "description") {
+        payload[key] = { raw: value }
+        continue
+      }
 
       if (attributeData.location === "_links") {
         payload._links[key] = { href: String(value) }

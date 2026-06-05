@@ -142,8 +142,8 @@ export const defaultSystemPrompt =
   "Answer in one json object which is a list of all the task objects." +
   "Each task object you put into this list must follow the schema for this task like discussed above with two differences:" +
   'Each Task object also absolutely needs to contain a field "taskType" which is the name of the name of the task specified in the "name" field of the schema for this task' +
-  'If you want to make one task a subtask of another task (or the user wants so) nest them in the specified "children" field.' +
-  'So in the nested "child" filed are full tasks like discussed above.' +
+  'If you want to make one task a subtask of another task (or the user wants so) nest them in the specified "children" field. (its important that you name it "children"' +
+  'So in the nested "children" filed are full tasks like discussed above.' +
   'If you don not want to create a subtask for a task just omit the "children" filed' +
   "One task can have zero or more subtasks but a task can not ever have two parents!" +
   "Only reply with the json data and nothing else." +
@@ -155,5 +155,5 @@ export const defaultTypes: Record<string, string> = {
   Date: "Date in the format: YYYY-MM-DD",
   Duration:
     'ISO 8601 duration format (if a task schema contains the field "duration" of type duration it needs the duration in days (not hours)',
-  Formattable: "Ein normaler String",
+  Formattable: "A normal string in markdown format",
 }
