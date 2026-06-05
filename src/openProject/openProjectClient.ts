@@ -298,10 +298,10 @@ class OpenProjectClient {
           }
         }
       } else {
-        throw new Error(`Fehler beim Erstellen des Tasks: ${response.statusText}`)
+        console.warn(`Fehler beim Erstellen des Tasks: ${response.statusText}`)
       }
     } catch (error) {
-      throw new Error(`Fehler beim Erstellen des Tasks: ${(error as Error).message}`)
+      console.warn(`Fehler beim Erstellen des Tasks: ${(error as Error).message}`)
     }
   }
 
