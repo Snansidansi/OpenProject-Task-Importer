@@ -136,7 +136,7 @@ async function startProcessing(message: StartProcessing, signal: AbortSignal): P
     availableTasks,
     message.selectedProject,
   )
-  return t("finished")
+  return t("taskImportFinish")
 }
 
 function buildLllmPrompt(

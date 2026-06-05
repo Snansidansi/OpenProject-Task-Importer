@@ -1,0 +1,152 @@
+{
+  "importPageTitle": {
+    "message": "Open Project Task Importer"
+  },
+  "settingsPageTitle": {
+    "message": "Settings"
+  },
+  "importSubtitle": {
+    "message": "Select a project and upload your document to automatically extract tasks."
+  },
+  "projectLabel": {
+    "message": "Project"
+  },
+  "projectPlaceholder": {
+    "message": "Please select..."
+  },
+  "loadingProjects": {
+    "message": "Loading projects..."
+  },
+  "uploadPlaceholder": {
+    "message": "Drag your PDF here or click to select it."
+  },
+  "fileReady": {
+    "message": "MB - ready for import"
+  },
+  "analyzingPdf": {
+    "message": "Analyzing PDF..."
+  },
+  "importButtonStart": {
+    "message": "Import Tasks"
+  },
+  "importButtonStop": {
+    "message": "Cancel Import"
+  },
+  "settingsButton": {
+    "message": "Settings"
+  },
+  "importButton": {
+    "message": "Import"
+  },
+  "openProjectUrlLabel": {
+    "message": "OpenProject URL"
+  },
+  "openProjectTokenLabel": {
+    "message": "OpenProject Token"
+  },
+  "openRouterApiKeyLabel": {
+    "message": "OpenRouter API Key"
+  },
+  "aiModelLabel": {
+    "message": "AI Model"
+  },
+  "openProjectTasksSection": {
+    "message": "Open Project Tasks"
+  },
+  "advancedPromptSettingsSection": {
+    "message": "Advanced Prompt Settings"
+  },
+  "aiPromptLabel": {
+    "message": "AI Prompt"
+  },
+  "referenceProjectLabel": {
+    "message": "Reference Project"
+  },
+  "referenceProjectRequired": {
+    "message": "Reference project must be selected"
+  },
+  "newTaskPlaceholder": {
+    "message": "New Task"
+  },
+  "taskDeleteButton": {
+    "message": "Delete Task"
+  },
+  "llmNotePlaceholder": {
+    "message": "Note for LLM"
+  },
+  "requiredField": {
+    "message": "Required field"
+  },
+  "githubLink": {
+    "message": "Addon Github Link"
+  },
+  "notOfficialPlugin": {
+    "message": "This is not an official plugin by OpenProject."
+  },
+  "selectFileError": {
+    "message": "Please upload a PDF file."
+  },
+  "selectProjectError": {
+    "message": "Please select a project."
+  },
+  "selectFileError2": {
+    "message": "Please select a file."
+  },
+  "apiKeyRequired": {
+    "message": "Please set an API key for OpenRouter."
+  },
+  "aiModelRequired": {
+    "message": "Please select an AI model"
+  },
+  "importAborted": {
+    "message": "Import aborted"
+  },
+  "unexpectedError": {
+    "message": "Unexpected Error: "
+  },
+  "taskImportFinish": {
+    "message": "Task import successful"
+  },
+  "referenceProjectNotSelected": {
+    "message": "Please select a reference project first."
+  },
+  "noTasksCreated": {
+    "message": "Please create at least one task first."
+  },
+  "schemaChanged": {
+    "message": "The schema for one or more tasks has changed ("
+  },
+  "schemaChangedEnd": {
+    "message": ").\n      Please review it in the settings and restart the process."
+  },
+  "taskUpdated": {
+    "message": "Task updated: "
+  },
+  "informationTitle": {
+    "message": "Information"
+  },
+  "closePopup": {
+    "message": "Close"
+  },
+  "loadingProjectsError": {
+    "message": "Error loading projects"
+  },
+  "createTaskError": {
+    "message": "Error creating task: "
+  },
+  "invalidJson": {
+    "message": "Invalid JSON in LLM response: "
+  },
+  "mustBeJsonArray": {
+    "message": "The LLM response must be a JSON array."
+  },
+  "missingTaskType": {
+    "message": "Task data missing 'taskType': "
+  },
+  "noMatchingTaskType": {
+    "message": "No matching task type found for: "
+  },
+  "abortError": {
+    "message": "Aborted"
+  }
+}
