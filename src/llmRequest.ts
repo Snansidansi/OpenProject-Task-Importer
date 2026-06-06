@@ -94,7 +94,7 @@ export class LlmRequest {
 
       const flattenedItem: any = {
         name: item.name,
-        child: {
+        children: {
           llmNote: "nest subtasks here",
           required: false,
         },
