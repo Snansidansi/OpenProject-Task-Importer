@@ -6,6 +6,9 @@ This browser extension simplifies the process of creating tasks in [OpenProject]
 
 The OpenProject Task Importer allows you to upload a PDF document (like a meeting minutes, project brief, or specification document). It then uses an LLM (Large Language Model) via the OpenRouter API to analyze the text and intelligently create structured tasks and subtasks in your OpenProject instance, based on your predefined task templates. Available languages are German and English.
 
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/065abec1-4ac4-40ce-b9d6-9928731f0db8" />
+
+
 ## Features
 
 - **PDF Analysis**: Extracts text from uploaded PDFs.
