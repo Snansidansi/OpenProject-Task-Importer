@@ -17,6 +17,20 @@ The OpenProject Task Importer allows you to upload a PDF document (like a meetin
 - **Nested Tasks**: Supports creating hierarchical task structures (parent tasks with subtasks).
 - **Configuration**: Set your OpenProject and OpenRouter API credentials, choose your preferred AI model, and customize the system prompt for the LLM.
 
+## Prerequisites
+
+- An OpenProject instance (cloud or self-hosted) with API access enabled.
+- An OpenRouter API key. You can get one at [openrouter.ai](https://openrouter.ai/).
+- A browser that supports Chrome Extensions (e.g., Chrome, Edge, Brave).
+
+## Installation
+
+1.  Clone or download this repository.
+2.  Open your browser's extension management page (e.g., `chrome://extensions`).
+3.  Enable "Developer mode".
+4.  Click "Load unpacked" and select the `dist` folder (or the root folder if you are running it in development mode).
+5.  Configure your API keys and settings via the extension's popup or options page.
+
 ## Services Used
 
 - **OpenProject**: The project management platform where tasks will be created. The extension connects to its REST API.
@@ -51,20 +65,6 @@ The OpenProject Task Importer allows you to upload a PDF document (like a meetin
 4.  **Task Creation**:
     - The extension parses the LLM's JSON response.
     - It sends API requests to your OpenProject instance to create the tasks and subtasks, populating the fields with the data provided by the LLM.
-
-## Prerequisites
-
-- An OpenProject instance (cloud or self-hosted) with API access enabled.
-- An OpenRouter API key. You can get one at [openrouter.ai](https://openrouter.ai/).
-- A browser that supports Chrome Extensions (e.g., Chrome, Edge, Brave).
-
-## Installation
-
-1.  Clone or download this repository.
-2.  Open your browser's extension management page (e.g., `chrome://extensions`).
-3.  Enable "Developer mode".
-4.  Click "Load unpacked" and select the `dist` folder (or the root folder if you are running it in development mode).
-5.  Configure your API keys and settings via the extension's popup or options page.
 
 ## Development
 
