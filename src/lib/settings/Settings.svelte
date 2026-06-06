@@ -6,7 +6,7 @@
   import Accordion from "./Accordion.svelte"
   import Footer from "./Footer.svelte"
   import { onMount } from "svelte"
-  import { getValue, saveValue, StorageKey } from "../../storage"
+  import { getValue, saveValue, StorageKey, exportSettings, importSettings } from "../../storage"
   import TaskSettings from "./tasks/TaskSettings.svelte"
   import type { Task, TaskMetadata, Project } from "../../openProject/openProjectTypes"
   import { showInfo } from "../../infoStore"
@@ -133,6 +133,26 @@
   function deleteTask(taskUrl: String) {
     tasks = tasks.filter((task) => task.url !== taskUrl)
   }
+
+  async function handleImportClick() {
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = ".json"
+    input.onchange = async (e: Event) => {
+      const target = e.target as HTMLInputElement
+      const file = target.files?.[0]
+      if (file) {
+        try {
+          await importSettings(file)
+          window.close()
+        } catch (error) {
+          console.error((error as Error).message)
+          showInfo(t("settingsImportError"))
+        }
+      }
+    }
+    input.click()
+  }
 </script>
 
 <div class="text-on-background flex w-full flex-col items-center">
@@ -184,6 +204,21 @@
         bind:value={aiPrompt}
       />
     </Accordion>
+
+    <div class="flex flex-col gap-2">
+      <button
+        onclick={exportSettings}
+        class="hover:bg-primary/90 bg-primary w-full rounded-lg px-4 py-2 text-white"
+      >
+        {t("exportSettings")}
+      </button>
+      <button
+        onclick={handleImportClick}
+        class="w-full rounded-lg bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+      >
+        {t("importSettings")}
+      </button>
+    </div>
   </div>
 
   <Footer />

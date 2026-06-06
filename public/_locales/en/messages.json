@@ -148,5 +148,14 @@
   },
   "abortError": {
     "message": "Aborted"
+  },
+  "exportSettings": {
+    "message": "Export settings"
+  },
+  "importSettings": {
+    "message": "Import Settings"
+  },
+  "settingsImportError": {
+    "message": "An error occured while importing the settings"
   }
 }

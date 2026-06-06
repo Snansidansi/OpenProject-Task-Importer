@@ -151,5 +151,14 @@
   },
   "abortError": {
     "message": "Abgebrochen"
+  },
+  "exportSettings": {
+    "message": "Einstellungen exportieren"
+  },
+  "importSettings": {
+    "message": "Einstellungen importieren"
+  },
+  "settingsImportError": {
+    "message": "Fehler beim importieren der Einstellungen"
   }
 }
