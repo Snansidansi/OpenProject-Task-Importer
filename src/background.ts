@@ -20,6 +20,21 @@ export type StopProcessing = {
 }
 
 let abortController: AbortController | null = null
+let keepAliveInterval: number | null = null
+
+function startKeepAlive() {
+  if (keepAliveInterval) return
+  keepAliveInterval = setInterval(() => {
+    chrome.runtime.getPlatformInfo(() => {})
+  }, 15000) as unknown as number
+}
+
+function stopKeepAlive() {
+  if (keepAliveInterval) {
+    clearInterval(keepAliveInterval)
+    keepAliveInterval = null
+  }
+}
 
 chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, sendResponse) => {
   switch (message.type) {
@@ -31,6 +46,7 @@ chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, se
       abortController = new AbortController()
       const signal = abortController.signal
 
+      startKeepAlive()
       startProcessing(message, signal)
         .then((result) => {
           sendResponse(result)
@@ -46,11 +62,13 @@ chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, se
           if (abortController?.signal === signal) {
             abortController = null
           }
+          stopKeepAlive()
         })
 
       return true
     case "StopProcessing":
       abortController?.abort()
+      stopKeepAlive()
   }
 })
 
