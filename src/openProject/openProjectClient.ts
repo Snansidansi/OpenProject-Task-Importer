@@ -246,7 +246,6 @@ class OpenProjectClient {
     project: Project,
     parentTaskId?: number,
   ): Promise<void> {
-    // Find matching task type
     const taskType = taskData.taskType
     if (!taskType) {
       console.warn(`${t("missingTaskType")}`, taskData)
@@ -259,7 +258,6 @@ class OpenProjectClient {
       return
     }
 
-    // Build payload
     const payload: any = {
       _links: {
         project: { href: project.url },
@@ -269,6 +267,7 @@ class OpenProjectClient {
 
     for (const [key, value] of Object.entries(taskData)) {
       if (key === "taskType" || key === "children") continue
+      if (value === null || value === undefined || value === "") continue
 
       const attributeData = matchedTask.data[key]
       if (!attributeData) continue
@@ -278,13 +277,24 @@ class OpenProjectClient {
       }
 
       if (attributeData.location === "_links") {
-        payload._links[key] = { href: String(value) }
+        let hrefValue: string | null = null
+
+        if (typeof value === "string") {
+          hrefValue = value
+        } else if (typeof value === "object" && value !== null) {
+          hrefValue = (value as any).value || (value as any).href || null
+        }
+
+        if (!hrefValue || typeof hrefValue !== "string" || hrefValue.trim() === "") {
+          continue
+        }
+
+        payload._links[key] = { href: hrefValue }
       } else {
         payload[key] = value
       }
     }
 
-    // Add parent link if applicable
     if (parentTaskId) {
       payload._links.parent = { href: `/api/v3/work_packages/${parentTaskId}` }
     }
@@ -296,7 +306,6 @@ class OpenProjectClient {
         const responseData = await response.json()
         const currentTaskId = responseData.id
 
-        // Handle nested children if they exist
         if (Array.isArray(taskData.children)) {
           for (const child of taskData.children) {
             await this.processSingleTask(child, availableTasks, project, currentTaskId)
