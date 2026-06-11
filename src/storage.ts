@@ -6,6 +6,12 @@ export enum StorageKey {
   AiPrompt = "Prompt",
   OpenProjectTasks = "OpenProjectTasks",
   ReferenceProject = "ReferenceProject",
+  ActiveImports = "ActiveImports",
+}
+
+export interface ActiveImport {
+  id: string
+  fileName: string
 }
 
 export async function saveValue(key: StorageKey, value: any): Promise<void> {

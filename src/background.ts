@@ -1,6 +1,6 @@
 import type { Project, Task, User } from "./openProject/openProjectTypes"
 import { openProjectClient } from "./openProject/openProjectClient"
-import { getValue, saveValue, StorageKey } from "./storage"
+import { getValue, saveValue, StorageKey, type ActiveImport } from "./storage"
 import { defaultSystemPrompt, defaultTypes, LlmRequest } from "./llmRequest"
 import { extractTextFromPdf } from "./textExtractor"
 import { OpenRouter } from "@openrouter/sdk"
@@ -11,15 +11,18 @@ export type BackgroundOperationMessage = StartProcessing | StopProcessing
 
 export type StartProcessing = {
   type: "StartProcessing"
+  id: string
   fileData: string
+  fileName: string
   selectedProject: Project
 }
 
 export type StopProcessing = {
   type: "StopProcessing"
+  id: string
 }
 
-let abortController: AbortController | null = null
+const abortControllers = new Map<string, AbortController>()
 let keepAliveInterval: number | null = null
 
 function startKeepAlive() {
@@ -30,7 +33,7 @@ function startKeepAlive() {
 }
 
 function stopKeepAlive() {
-  if (keepAliveInterval) {
+  if (abortControllers.size === 0 && keepAliveInterval) {
     clearInterval(keepAliveInterval)
     keepAliveInterval = null
   }
@@ -39,12 +42,13 @@ function stopKeepAlive() {
 chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, sendResponse) => {
   switch (message.type) {
     case "StartProcessing":
-      if (abortController) {
-        abortController.abort()
+      if (abortControllers.has(message.id)) {
+        abortControllers.get(message.id)?.abort()
       }
 
-      abortController = new AbortController()
-      const signal = abortController.signal
+      const controller = new AbortController()
+      abortControllers.set(message.id, controller)
+      const signal = controller.signal
 
       startKeepAlive()
       startProcessing(message, signal)
@@ -58,17 +62,24 @@ chrome.runtime.onMessage.addListener((message: BackgroundOperationMessage, _, se
             sendResponse(t("abortError"))
           }
         })
-        .finally(() => {
-          if (abortController?.signal === signal) {
-            abortController = null
+        .finally(async () => {
+          if (abortControllers.get(message.id) === controller) {
+            abortControllers.delete(message.id)
           }
           stopKeepAlive()
+
+          // Remove from active imports storage
+          const currentImports = (await getValue<ActiveImport[]>(StorageKey.ActiveImports)) ?? []
+          await saveValue(
+            StorageKey.ActiveImports,
+            currentImports.filter((i) => i.id !== message.id),
+          )
         })
 
       return true
     case "StopProcessing":
-      abortController?.abort()
-      stopKeepAlive()
+      abortControllers.get(message.id)?.abort()
+      return false
   }
 })
 
@@ -96,7 +107,7 @@ async function startProcessing(message: StartProcessing, signal: AbortSignal): P
   if (signal.aborted) throw new DOMException(t("abortError"), "AbortError")
 
   const arrayBuffer = base64ToArrayBuffer(message.fileData)
-  const file = new File([arrayBuffer], "document.pdf", { type: "application/pdf" })
+  const file = new File([arrayBuffer], message.fileName, { type: "application/pdf" })
   let extractedText: string
   try {
     if (signal.aborted) throw new DOMException(t("abortError"), "AbortError")
