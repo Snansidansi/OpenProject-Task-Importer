@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { StartProcessing, StopProcessing } from "../../background"
+  import type { StartProcessing } from "../../background"
   import { showInfo } from "../../infoStore"
   import type { Project } from "../../openProject/openProjectTypes"
   import ImportButton from "./ImportButton.svelte"
@@ -9,7 +9,6 @@
 
   let { projects } = $props<{ projects: Project[] }>()
 
-  let isProcessing = $state(false)
   let selectedProject: Project | null = $state(null)
   let selectedFile: File | null = $state(null)
   let projectsLoaded = $state(false)
@@ -43,20 +42,11 @@
       return
     }
 
-    if (isProcessing) {
-      const message: StopProcessing = { type: "StopProcessing" }
-      chrome.runtime.sendMessage(message)
-      isProcessing = false
-      return
-    }
-
-    isProcessing = true
     let fileData: ArrayBuffer
     try {
       fileData = await selectedFile.arrayBuffer()
     } catch (error) {
       showInfo((error as Error).message)
-      isProcessing = false
       return
     }
     const base64Data = arrayBufferToBase64(fileData)
@@ -66,13 +56,11 @@
       fileData: base64Data,
       selectedProject: selectedProject,
     }
+    selectedFile = null
     const info = await chrome.runtime.sendMessage(startMessage)
     if (info !== "") {
       showInfo(info)
     }
-
-    isProcessing = false
-    selectedFile = null
   }
 </script>
 
@@ -87,12 +75,11 @@
   <div class="mb-4">
     <ProjectSelection
       projects={projects}
-      disabled={isProcessing}
       bind:selectedProject={selectedProject}
       label={t("projectLabel")}
     />
   </div>
-  <PdfSelector isProcessing={isProcessing} bind:selectedFile={selectedFile} />
+  <PdfSelector bind:selectedFile={selectedFile} />
   <div class="h-7"></div>
-  <ImportButton isProcessing={isProcessing} onclick={handleButtonClick} />
+  <ImportButton onclick={handleButtonClick} />
 </div>
