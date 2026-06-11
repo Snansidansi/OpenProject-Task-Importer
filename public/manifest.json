@@ -1,7 +1,7 @@
 {
   "name": "OpenProject Task Importer",
   "description": "An extension to import Tasks from a PDF file into OpenProject using a OpenRouter LLM.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "manifest_version": 3,
   "default_locale": "en",
   "action": {
