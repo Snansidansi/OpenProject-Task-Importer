@@ -131,6 +131,9 @@
   "loadingProjectsError": {
     "message": "Fehler beim Laden der Projekte"
   },
+  "noProjectsFound": {
+    "message": "Keine Projekte gefunden"
+  },
   "createTaskError": {
     "message": "Fehler beim Erstellen der Aufgabe: "
   },

@@ -128,6 +128,9 @@
   "loadingProjectsError": {
     "message": "Error loading projects"
   },
+  "noProjectsFound": {
+    "message": "No projects found"
+  },
   "createTaskError": {
     "message": "Error creating task: "
   },

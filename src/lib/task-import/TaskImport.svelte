@@ -34,7 +34,7 @@
 
     const listener = (changes: { [key: string]: chrome.storage.StorageChange }) => {
       if (changes[StorageKey.ActiveImports]) {
-        activeImports = changes[StorageKey.ActiveImports].newValue ?? []
+        activeImports = (changes[StorageKey.ActiveImports].newValue as ActiveImport[]) ?? []
       }
     }
     chrome.storage.onChanged.addListener(listener)
