@@ -12,7 +12,7 @@
   class="bg-surface-container-low border-outline-variant mb-2 flex items-center gap-3 rounded-xl border px-3 py-2 last:mb-0"
 >
   <span class="material-symbols-outlined text-primary text-xl">description</span>
-  <span class="font-body-sm text-on-surface truncate flex-1">
+  <span class="font-body-sm text-on-surface min-w-0 flex-1 truncate">
     {importEntry.fileName}
   </span>
   <div class="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>

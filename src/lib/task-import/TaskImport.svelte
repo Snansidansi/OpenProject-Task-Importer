@@ -100,7 +100,7 @@
   }
 </script>
 
-<div class="text-on-surface flex flex-col">
+<div class="text-on-surface flex w-full flex-col">
   <!-- Welcome / Context -->
   <div class="mb-stack-md w-full text-center">
     <p class="font-body-md text-body-md text-on-surface-variant">

@@ -26,7 +26,7 @@
   <TopBar showImport={showImport} />
 
   <main
-    class="px-margin-mobile py-stack-md mx-auto flex w-full max-w-2xl grow flex-col items-center overflow-y-auto"
+    class="px-margin-mobile py-stack-md mx-auto flex w-full max-w-2xl grow flex-col items-stretch overflow-y-auto"
   >
     <InfoPopup />
     {#if showImport}
