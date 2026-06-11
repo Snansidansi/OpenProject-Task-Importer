@@ -93,7 +93,7 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
   return bytes.buffer
 }
 
-async function startProcessing(message: StartProcessing, signal: AbortSignal): Promise<string> {
+async function startProcessing(message: StartProcessing, signal: AbortSignal): Promise<string | undefined> {
   const openRouterKey = await getValue(StorageKey.OpenRouterApiKey)
   if (!openRouterKey) {
     return t("apiKeyRequired")
@@ -160,12 +160,11 @@ async function startProcessing(message: StartProcessing, signal: AbortSignal): P
   if (signal.aborted) throw new DOMException(t("abortError"), "AbortError")
 
   const responseData = llmReponse.choices[0].message.content
-  const info = await openProjectClient.createTaskFromLlmResponse(
+  await openProjectClient.createTaskFromLlmResponse(
     responseData,
     availableTasks,
     message.selectedProject,
   )
-  return t("taskImportFinish")
 }
 
 function buildLllmPrompt(

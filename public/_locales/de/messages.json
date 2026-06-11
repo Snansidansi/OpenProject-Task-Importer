@@ -107,9 +107,6 @@
   "unexpectedError": {
     "message": "Unerwarteter Fehler: "
   },
-  "taskImportFinish": {
-    "message": "Tasks wurden erfolgreich importiert"
-  },
   "referenceProjectNotSelected": {
     "message": "Bitte wählen Sie zuerst ein Referenzprojekt aus."
   },

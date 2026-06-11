@@ -84,11 +84,7 @@
       selectedProject: selectedProject,
     }
     selectedFile = null
-    const info = await chrome.runtime.sendMessage(startMessage)
-
-    if (info !== "") {
-      showInfo(info)
-    }
+    await chrome.runtime.sendMessage(startMessage)
   }
 
   async function handleCancel(id: string) {
@@ -122,7 +118,7 @@
   {#if activeImports.length > 0}
     <div class="mt-4">
       {#each activeImports as importEntry (importEntry.id)}
-        <ActiveImportItem {importEntry} onCancel={handleCancel} />
+        <ActiveImportItem importEntry={importEntry} onCancel={handleCancel} />
       {/each}
     </div>
   {/if}
