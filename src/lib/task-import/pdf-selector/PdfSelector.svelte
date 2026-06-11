@@ -9,6 +9,12 @@
   let isDragActive = $state(false)
   let fileInput: HTMLInputElement
 
+  $effect(() => {
+    if (selectedFile === null && fileInput) {
+      fileInput.value = ""
+    }
+  })
+
   let dynamicClasses = $derived(
     isDragActive || (selectedFile)
       ? "border-[#3d6845] bg-[#f1f7f2]"
